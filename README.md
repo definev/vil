@@ -2,7 +2,6 @@
 Dự án tạo ra ngôn ngữ lập trình mới với cú pháp tiếng việt, bạn có thể sử dụng ngôn ngữ khác để tạo trình thông dịch cho ngôn ngữ VL, trong dự án này tôi sẽ sử dụng dart để triển khai trình thông dịch. VL được tạo ra với chuỗi bài viết về cách tạo trình thông dịch của mình.
 
 ## Giới thiệu về cú pháp của VL 😂
----
 VL là một ngôn ngữ kịch bản (Scripting language). Với cú pháp theo phong cách của ngôn ngữ C.
 
 ### <b>Kiểu dữ liệu</b>
