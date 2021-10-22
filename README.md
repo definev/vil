@@ -1,4 +1,4 @@
-![Black and Yellow Modern Typography Poster](https://user-images.githubusercontent.com/62325868/138510305-135a8279-3ee9-449d-8876-1bb10f30bc74.png)
+<img src="https://user-images.githubusercontent.com/62325868/138510986-cdfb34b2-12c4-4b83-947c-32735c6a7478.png" width="200">
 
 # Giới thiệu chung về ViL
 ViL là ngôn ngữ kịch bản (Scripting language). ViL là ngôn ngữ bậc cao, có kiểu khai báo động.
