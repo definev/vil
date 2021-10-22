@@ -1,17 +1,17 @@
-# Ngôn ngữ VL
+# Ngôn ngữ ViL
 Ngôn ngữ lập trình với cú pháp thuần việt.
 
-# Giới thiệu chung về VL
-VL là ngôn ngữ kịch bản (Scripting language). VL là ngôn ngữ bậc cao, có kiểu khai báo động.
-VL cho phép sử dụng kí tự UTF-8 giúp định nghĩa các từ khóa có dấu.
-Chương trình `hello world` trong VL.
+# Giới thiệu chung về ViL
+ViL là ngôn ngữ kịch bản (Scripting language). ViL là ngôn ngữ bậc cao, có kiểu khai báo động.
+ViL cho phép sử dụng kí tự UTF-8 giúp định nghĩa các từ khóa có dấu.
+Chương trình `hello world` trong ViL.
 ```js
 // Hello world
 xuất "Hello world!";
 ```
 
 ## Hàm build-in
-VL cung cấp hàm `xuất` để đưa dữ liệu ra console.
+ViL cung cấp hàm `xuất` để đưa dữ liệu ra console.
 ```js
 tạo tên = "Tèo";
 tạo tên_bạn = "Tí";
@@ -19,13 +19,13 @@ xuất tên " + là bạn của " + tên_bạn; // Tèo là bạn của Tí
 ```
 
 ## Kiểu dữ liệu
-Trong VL, các nguyên liệu cơ bản để tạo nên ngôn ngữ chỉ có một số kiểu.
+Trong ViL, các nguyên liệu cơ bản để tạo nên ngôn ngữ chỉ có một số kiểu.
 - **boolean** Bạn không thể lâp trình logic mà thiếu đi kiểu dữ liệu logic được, cú pháp của nó chỉ đơn giản là `đúng` và `sai`
 ```js
 đúng; // Tương ứng với true
 sai;  // Tương ứng với false 
 ```
-- **số** VL chỉ có một kiểu số là số thập phân để đại diện cho cả số nguyên và số thập phân. Trong nhiều ngôn ngữ lập trình đầy đủ sẽ hỗ trợ rất nhiều kiểu số như số nhị phân, số bát phân, ... tuy nhiên để đơn giản thì VL chỉ có một kiểu số.
+- **số** ViL chỉ có một kiểu số là số thập phân để đại diện cho cả số nguyên và số thập phân. Trong nhiều ngôn ngữ lập trình đầy đủ sẽ hỗ trợ rất nhiều kiểu số như số nhị phân, số bát phân, ... tuy nhiên để đơn giản thì ViL chỉ có một kiểu số.
 ```js
  12.34; // Số thập phân
  1234;  // Số nguyên
@@ -37,16 +37,16 @@ sai;  // Tương ứng với false
 "1234"; // đây là kiểu chuỗi không phải kiểu số
 ""; // Chuỗi rỗng
 ```
-- **rỗng** Một kiểu dữ liệu gây ra biết bao nhiêu bug cho lập trình viên. Hướng tới cú pháp thuần việt của VL, kiểu dữ liệu `rỗng` được khai báo bằng từ khóa `rỗng`. Nó tương đương với `null` trong Java hay C.
+- **rỗng** Một kiểu dữ liệu gây ra biết bao nhiêu bug cho lập trình viên. Hướng tới cú pháp thuần việt của ViL, kiểu dữ liệu `rỗng` được khai báo bằng từ khóa `rỗng`. Nó tương đương với `null` trong Java hay C.
 ```js
 rỗng;
 ```
 
 ## Biểu thức
-Nếu ví kiểu dữ liệu là những hạt nhân thì biểu thức chắc chắn là các phân tử tạo nên VL.
+Nếu ví kiểu dữ liệu là những hạt nhân thì biểu thức chắc chắn là các phân tử tạo nên ViL.
 
 ### Biểu thức toán học
-VL cung cấp các toán tử cơ bản để cộng, trừ, nhân và chia.
+ViL cung cấp các toán tử cơ bản để cộng, trừ, nhân và chia.
 ```js
 1 + 1;
 2 - 2;
@@ -60,7 +60,7 @@ Toán tử `-` để đổi dấu.
 -số_âm;
 ```
 
-VL có hỗ trợ toán tử `++` và `--` như trong C ở cả trước và sau một biến kiểu số.
+ViL có hỗ trợ toán tử `++` và `--` như trong C ở cả trước và sau một biến kiểu số.
 ```js
 xuất 4++; // 4
 xuất ++4; // 5
@@ -85,7 +85,7 @@ Chúng ta có thể so sánh hai kiểu dữ liệu bất kì và trả ra kết
 ```
 
 ### Biểu thức Logic
-Với kiểu Boolean, VL cung cấp prefix `!` để đảo trạng thái.
+Với kiểu Boolean, ViL cung cấp prefix `!` để đảo trạng thái.
 ```js
 !đúng; // sai
 !sai;  // đúng
@@ -103,21 +103,21 @@ Có 2 kiểu so sánh được hỗ trợ:
 
 
 ## Khai báo biến
-Giống như javascript, lua, python, ... Đây là cách khai báo một biến trong VL.
+Giống như javascript, lua, python, ... Đây là cách khai báo một biến trong ViL.
 ```js
 tạo tên = "Tèo"; // Kiểu chuỗi
 tạo tuổi = 18;   // Kiểu số
 ```
-Như bạn thấy thì chúng ta không cần khai báo kiểu dữ liệu của biến. Trình thông dịch của VL sẽ tự hiểu kiểu dữ liệu là gì.
+Như bạn thấy thì chúng ta không cần khai báo kiểu dữ liệu của biến. Trình thông dịch của ViL sẽ tự hiểu kiểu dữ liệu là gì.
 
-Để biểu thị cho giá trị null, VL sử dụng từ khóa `rỗng`. Với việc gán dữ liệu vào biến ta sẽ thực hiện như sau.
+Để biểu thị cho giá trị null, ViL sử dụng từ khóa `rỗng`. Với việc gán dữ liệu vào biến ta sẽ thực hiện như sau.
 ```js
 tạo a; // a == rỗng
 a = 10;
 ```
 
 ## Câu lệnh điều kiện và vòng lặp
-VL cung cấp 2 từ khóa `nếu` <=> `if` và `thì` <=> `else`. Cách khai báo một điều kiện sẽ giống với ngôn ngữ họ C.
+ViL cung cấp 2 từ khóa `nếu` <=> `if` và `thì` <=> `else`. Cách khai báo một điều kiện sẽ giống với ngôn ngữ họ C.
 ```js
 nếu (tuổi_anh == tuổi_em) {
     xuất "sinh đôi";
@@ -142,7 +142,7 @@ lặp (tạo i = 0;   i < 10;        i++) {
 
 ## Khai báo hàm
 Để khai báo một hàm, đơn giản bạn chỉ cần đặt từ khóa "hàm" phía trước tên hàm và thêm các tham số cho hàm trong cặp ngoặc.
-Cú pháp khai báo hàm của VL khá giống với các ngôn ngữ C, Java, Dart, Javascript ... nên nếu bạn có biết qua về những ngôn ngữ này thì VL rất dễ tiếp cận.
+Cú pháp khai báo hàm của ViL khá giống với các ngôn ngữ C, Java, Dart, Javascript ... nên nếu bạn có biết qua về những ngôn ngữ này thì ViL rất dễ tiếp cận.
 Để trả về sử dụng từ khóa `return`, do một số từ khóa khi chuyển ngữ sang tiếng việt mình không thấy có từ một âm tiết nào phù hợp, để đơn giản mình sẽ vẫn giữ nguyên tiếng anh.
 ```js
 hàm bao_giờ_bán_được_một_tỉ_gói_mè() {
@@ -155,8 +155,8 @@ hàm cộng(a, b) {
 ```
 
 ## Khai báo lớp
-VL có hỗ trợ lập trình hướng đối tượng (OOP). 
-Cách khai báo một lớp (class) trong VL.  
+ViL có hỗ trợ lập trình hướng đối tượng (OOP). 
+Cách khai báo một lớp (class) trong ViL.  
 ```js
 lớp Xe {
     // hàm `khởi_tạo` được chạy khi tạo một instance cho lớp.
@@ -174,7 +174,7 @@ xe_tui.bóp_còi(); // Tèo Bíp!!!
 ```
 
 ### Kế thừa
-Cú pháp khai báo kế thừa lớp trong VL được định khai báo qua dấu `<`.
+Cú pháp khai báo kế thừa lớp trong ViL được định khai báo qua dấu `<`.
 ```js
 lớp Mẹ {
     khởi_tạo(tên) {
