@@ -1,4 +1,3 @@
-# ViL
 ![Black and Yellow Modern Typography Poster](https://user-images.githubusercontent.com/62325868/138510305-135a8279-3ee9-449d-8876-1bb10f30bc74.png)
 
 # Giới thiệu chung về ViL
