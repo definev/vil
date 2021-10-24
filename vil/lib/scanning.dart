@@ -1,0 +1,232 @@
+import 'package:vil/token.dart';
+import 'package:vil/token_type.dart';
+
+/// Scanning là quá trình chuyển từ văn bản sang token giúp trình thông dịch
+/// hiểu được các bước tiếp theo.
+///
+/// Bước Scanning còn có một cái tên nghe sang chảnh hơn hẳn là Lexer
+///
+/// Token là đối tương đại diện cho các từ khóa, kí hiệu, giá trị nguyên thủy
+/// của biến.
+class Scanning {
+  Scanning(this.source);
+
+  final String source;
+  List<Token> _tokens = [];
+  int _startPosition = 0;
+  int _currentPosition = 0;
+
+  int _col = 1;
+  int _line = 1;
+
+  Map<String, TokenType> _keyword = {
+    "khi": TokenType.kKhi,
+    "lặp": TokenType.kLap,
+    "tạo": TokenType.kTao,
+    "xuất": TokenType.kXuat,
+    "đúng": TokenType.kDung,
+    "sai": TokenType.kSai,
+    "nếu": TokenType.kNeu,
+    "hoặc": TokenType.kHoac,
+    "lớp": TokenType.kLop,
+    "hàm": TokenType.kHam,
+    "rỗng": TokenType.kRong,
+    "cha": TokenType.kCha,
+    "this": TokenType.kThis,
+    "return": TokenType.kReturn,
+  };
+
+  bool get _isAtEnd => _currentPosition >= source.length;
+
+  void error(String message) {
+    String msg = "[$_line, $_col]: $message";
+    throw ScanningError(msg);
+  }
+
+  String _autoIncrementPeek() {
+    _col++;
+    return source[_currentPosition++];
+  }
+
+  String _peek() => source[_currentPosition];
+
+  String _peekPrevious() => source[_currentPosition - 1];
+
+  void _addToken(TokenType type, {dynamic literal}) {
+    _tokens.add(
+      Token(
+        type: type,
+        col: _col - (_currentPosition - _startPosition - 1),
+        line: _line,
+        lexeme: source.substring(_startPosition, _currentPosition),
+        literal: literal,
+      ),
+    );
+  }
+
+  bool _isNumber(String number) => RegExp(r'\d').hasMatch(number);
+
+  bool _isAlphabet(String source) =>
+      RegExp(r'[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF]').hasMatch(source);
+
+  // bool _validString(String source) => _isNumber(source) || _isAlphabet(source);
+
+  void _addStringToken() {
+    while (!_isAtEnd && _peek() != '"') {
+      _autoIncrementPeek();
+    }
+
+    if (_isAtEnd) error('Đã đến cuối file, phân tích chuỗi thất bại.');
+    _autoIncrementPeek();
+
+    _addToken(
+      TokenType.kChuoi,
+      literal: source.substring(_startPosition + 1, _currentPosition - 1),
+    );
+  }
+
+  void _addNumberToken() {
+    while (!_isAtEnd && _isNumber(_peek())) {
+      _autoIncrementPeek();
+    }
+    if (_isAtEnd) error('Đã đến cuối file, phân tích số thất bại.');
+
+    _addToken(
+      TokenType.kSo,
+      literal: int.parse(
+        source.substring(_startPosition, _currentPosition),
+      ),
+    );
+  }
+
+  void _identifier() {
+    while (!_isAtEnd && _isAlphabet(_peek())) {
+      _autoIncrementPeek();
+    }
+
+    if (_isAtEnd) error('Đã đến cuối file, phân tích tên biến thất bại.');
+
+    if (_keyword[source.substring(_startPosition, _currentPosition)] != null) {
+      _addToken(_keyword[source.substring(_startPosition, _currentPosition)]!);
+    } else {
+      _addToken(TokenType.identifier);
+    }
+  }
+
+  List<Token> scan() {
+    try {
+      while (!_isAtEnd) {
+        _startPosition = _currentPosition;
+        _scanToken();
+      }
+      return _tokens;
+    } on ScanningError catch (e) {
+      print(e.message);
+      return [];
+    }
+  }
+
+  void _scanToken() {
+    String current = _autoIncrementPeek();
+
+    switch (current) {
+      case '\n':
+        _col = 1;
+        _line++;
+        break;
+      case '{':
+        _addToken(TokenType.leftBrace);
+        break;
+      case '}':
+        _addToken(TokenType.rightBrace);
+        break;
+      case '(':
+        _addToken(TokenType.leftParen);
+        break;
+      case ')':
+        _addToken(TokenType.rightParen);
+        break;
+      case ',':
+        _addToken(TokenType.comma);
+        break;
+      case '.':
+        _addToken(TokenType.dot);
+        break;
+      case '-':
+        if (_autoIncrementPeek() == '-') {
+          _addToken(TokenType.minusMinus);
+          return;
+        }
+        _addToken(TokenType.minus);
+        break;
+      case '+':
+        if (_autoIncrementPeek() == '+') {
+          _addToken(TokenType.plusPlus);
+          return;
+        }
+        _addToken(TokenType.plus);
+        break;
+      case ';':
+        _addToken(TokenType.semicolon);
+        break;
+      case '/':
+        _addToken(TokenType.slash);
+        break;
+      case '*':
+        _addToken(TokenType.star);
+        break;
+      case '?':
+        _addToken(TokenType.question);
+        break;
+      case ':':
+        _addToken(TokenType.colon);
+        break;
+      case '!':
+        if (_autoIncrementPeek() == '=') {
+          _addToken(TokenType.bangEqual);
+          return;
+        }
+        _addToken(TokenType.bang);
+        break;
+      case '=':
+        if (_autoIncrementPeek() == '=') {
+          _addToken(TokenType.equalEqual);
+          return;
+        }
+        _addToken(TokenType.equal);
+        break;
+      case '>':
+        if (_autoIncrementPeek() == '=') {
+          _addToken(TokenType.greaterEqual);
+          return;
+        }
+        _addToken(TokenType.greater);
+        break;
+      case '<':
+        if (_autoIncrementPeek() == '=') {
+          _addToken(TokenType.lessEqual);
+          return;
+        }
+        _addToken(TokenType.less);
+        break;
+      case '"':
+        _addStringToken();
+        break;
+      case '\t':
+      case '\r':
+        break;
+      default:
+        if (_isNumber(_peekPrevious())) {
+          _addNumberToken();
+        } else if (_isAlphabet(_peekPrevious())) {
+          _identifier();
+        }
+    }
+  }
+}
+
+class ScanningError {
+  final String message;
+
+  ScanningError(this.message);
+}

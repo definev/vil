@@ -1,0 +1,14 @@
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "vil",
+      "rootUri": "../",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    }
+  ],
+  "generated": "2021-10-23T04:39:06.118427Z",
+  "generator": "pub",
+  "generatorVersion": "2.14.4"
+}
