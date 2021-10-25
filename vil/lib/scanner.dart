@@ -1,5 +1,6 @@
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
+import 'package:vil/vil.dart';
 
 /// Scanning là quá trình chuyển từ văn bản sang token giúp trình thông dịch
 /// hiểu được các bước tiếp theo.
@@ -8,10 +9,11 @@ import 'package:vil/token_type.dart';
 ///
 /// Token là đối tương đại diện cho các từ khóa, kí hiệu, giá trị nguyên thủy
 /// của biến.
-class Scanning {
-  Scanning(this.source);
+class Scanner {
+  Scanner(this.source);
 
   final String source;
+
   List<Token> _tokens = [];
   int _startPosition = 0;
   int _currentPosition = 0;
@@ -19,7 +21,7 @@ class Scanning {
   int _col = 1;
   int _line = 1;
 
-  Map<String, TokenType> _keyword = {
+  Map<String, TokenType> _keywords = {
     "khi": TokenType.kKhi,
     "lặp": TokenType.kLap,
     "tạo": TokenType.kTao,
@@ -34,13 +36,14 @@ class Scanning {
     "cha": TokenType.kCha,
     "this": TokenType.kThis,
     "return": TokenType.kReturn,
+    "&&": TokenType.kAnd,
+    "||": TokenType.kOr,
   };
 
   bool get _isAtEnd => _currentPosition >= source.length;
 
   void error(String message) {
-    String msg = "[$_line, $_col]: $message";
-    throw ScanningError(msg);
+    Vil.error(errorIn: 'SCANNER', line: _line, col: _col, message: message);
   }
 
   String _autoIncrementPeek() {
@@ -49,8 +52,6 @@ class Scanning {
   }
 
   String _peek() => source[_currentPosition];
-
-  String _peekPrevious() => source[_currentPosition - 1];
 
   void _addToken(TokenType type, {dynamic literal}) {
     _tokens.add(
@@ -67,17 +68,25 @@ class Scanning {
   bool _isNumber(String number) => RegExp(r'\d').hasMatch(number);
 
   bool _isAlphabet(String source) =>
-      RegExp(r'[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF]').hasMatch(source);
+      RegExp(r'[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF_]').hasMatch(source);
 
-  // bool _validString(String source) => _isNumber(source) || _isAlphabet(source);
+  bool _isNumberAlphabet(String source) =>
+      _isNumber(source) || _isAlphabet(source);
+
+  bool _match(String current) {
+    if (_peek() == current) {
+      _currentPosition++;
+      return true;
+    }
+    return false;
+  }
 
   void _addStringToken() {
-    while (!_isAtEnd && _peek() != '"') {
+    while (!_isAtEnd && !_match('"')) {
       _autoIncrementPeek();
     }
 
     if (_isAtEnd) error('Đã đến cuối file, phân tích chuỗi thất bại.');
-    _autoIncrementPeek();
 
     _addToken(
       TokenType.kChuoi,
@@ -100,40 +109,32 @@ class Scanning {
   }
 
   void _identifier() {
-    while (!_isAtEnd && _isAlphabet(_peek())) {
+    while (!_isAtEnd && _isNumberAlphabet(_peek())) {
       _autoIncrementPeek();
     }
 
     if (_isAtEnd) error('Đã đến cuối file, phân tích tên biến thất bại.');
 
-    if (_keyword[source.substring(_startPosition, _currentPosition)] != null) {
-      _addToken(_keyword[source.substring(_startPosition, _currentPosition)]!);
+    if (_keywords[source.substring(_startPosition, _currentPosition)] != null) {
+      _addToken(_keywords[source.substring(_startPosition, _currentPosition)]!);
     } else {
       _addToken(TokenType.identifier);
     }
   }
 
   List<Token> scan() {
-    try {
-      while (!_isAtEnd) {
-        _startPosition = _currentPosition;
-        _scanToken();
-      }
-      return _tokens;
-    } on ScanningError catch (e) {
-      print(e.message);
-      return [];
+    while (!_isAtEnd) {
+      _startPosition = _currentPosition;
+      _scanToken();
     }
+
+    return _tokens;
   }
 
   void _scanToken() {
     String current = _autoIncrementPeek();
 
     switch (current) {
-      case '\n':
-        _col = 1;
-        _line++;
-        break;
       case '{':
         _addToken(TokenType.leftBrace);
         break;
@@ -153,14 +154,16 @@ class Scanning {
         _addToken(TokenType.dot);
         break;
       case '-':
-        if (_autoIncrementPeek() == '-') {
+        if (_peek() == '-') {
+          _autoIncrementPeek();
           _addToken(TokenType.minusMinus);
           return;
         }
         _addToken(TokenType.minus);
         break;
       case '+':
-        if (_autoIncrementPeek() == '+') {
+        if (_peek() == '+') {
+          _autoIncrementPeek();
           _addToken(TokenType.plusPlus);
           return;
         }
@@ -182,28 +185,32 @@ class Scanning {
         _addToken(TokenType.colon);
         break;
       case '!':
-        if (_autoIncrementPeek() == '=') {
+        if (_peek() == '=') {
+          _autoIncrementPeek();
           _addToken(TokenType.bangEqual);
           return;
         }
         _addToken(TokenType.bang);
         break;
       case '=':
-        if (_autoIncrementPeek() == '=') {
+        if (_peek() == '=') {
+          _autoIncrementPeek();
           _addToken(TokenType.equalEqual);
           return;
         }
         _addToken(TokenType.equal);
         break;
       case '>':
-        if (_autoIncrementPeek() == '=') {
+        if (_peek() == '=') {
+          _autoIncrementPeek();
           _addToken(TokenType.greaterEqual);
           return;
         }
         _addToken(TokenType.greater);
         break;
       case '<':
-        if (_autoIncrementPeek() == '=') {
+        if (_peek() == '=') {
+          _autoIncrementPeek();
           _addToken(TokenType.lessEqual);
           return;
         }
@@ -212,13 +219,22 @@ class Scanning {
       case '"':
         _addStringToken();
         break;
+      case ' ':
+        _col++;
+        break;
+      case '\n':
+        _col = 1;
+        _line++;
+        break;
       case '\t':
+        _col += 2;
+        break;
       case '\r':
         break;
       default:
-        if (_isNumber(_peekPrevious())) {
+        if (_isNumber(current)) {
           _addNumberToken();
-        } else if (_isAlphabet(_peekPrevious())) {
+        } else if (_isAlphabet(current)) {
           _identifier();
         }
     }

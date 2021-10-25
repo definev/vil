@@ -1,11 +1,13 @@
 import 'dart:io';
 
-import 'package:vil/scanning.dart';
+import 'package:vil/scanner.dart';
 import 'package:vil/token.dart';
 
 class Vil {
+  static bool hadError = false;
+
   static void run(String source) {
-    Scanning scanning = Scanning(source);
+    Scanner scanning = Scanner(source);
     List<Token> tokens = scanning.scan();
     for (final token in tokens) {
       print(token);
@@ -16,6 +18,7 @@ class Vil {
     File file = File(fileSource);
     String source = file.readAsStringSync();
     run(source);
+    if (hadError) exit(65);
   }
 
   static void runPrompt() {
@@ -24,8 +27,20 @@ class Vil {
       String? line = stdin.readLineSync();
       if (line != null) {
         run(line);
+        hadError = false;
       }
     }
+  }
+
+  static void error({
+    required String errorIn,
+    required int line,
+    required int col,
+    required String message,
+    String? errorAt,
+  }) {
+    print('|$errorIn| [$line, $col]: Lỗi $errorAt: $message');
+    hadError = true;
   }
 }
 
