@@ -3,6 +3,15 @@ Mỗi ngôn ngữ đều có một số cú pháp riêng và có nhưng điểm 
 VL có cú pháp theo phong cách ngôn ngữ C.
 
 ```js
-expression => primary
-primary    => IDENTIFIER | "chuỗi" | "số";
+expression     => literal
+               | unary
+               | binary
+               | grouping ;
+
+literal        => số | chuỗi | "đúng" | "sai" | "rỗng" ;
+grouping       => "(" expression ")" ;
+unary          => ( "-" | "!" ) expression ;
+binary         => expression operator expression ;
+operator       => "==" | "!=" | "<" | "<=" | ">" | ">="
+               | "+"  | "-"  | "*" | "/" ;
 ```
