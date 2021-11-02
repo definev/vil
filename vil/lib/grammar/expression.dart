@@ -9,4 +9,5 @@ part 'expression.g.dart';
   "Literal  : dynamic value",
   "Unary    : Token operator, Expression right"
 ])
+// ignore: unused_element
 class _Expression {}

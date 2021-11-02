@@ -6,7 +6,16 @@ part of 'expression.dart';
 // AstGenerator
 // **************************************************************************
 
-abstract class Expression {}
+abstract class ExpressionVisitor<T> {
+  T visitBinary(Binary binary);
+  T visitGrouping(Grouping grouping);
+  T visitLiteral(Literal literal);
+  T visitUnary(Unary unary);
+}
+
+abstract class Expression {
+  T accept<T>(ExpressionVisitor<T> visitor);
+}
 
 class Binary extends Expression {
   final Expression left;
@@ -17,6 +26,9 @@ class Binary extends Expression {
     this.operator,
     this.right,
   );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitBinary(this);
+  }
 }
 
 class Grouping extends Expression {
@@ -24,6 +36,9 @@ class Grouping extends Expression {
   Grouping(
     this.expression,
   );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitGrouping(this);
+  }
 }
 
 class Literal extends Expression {
@@ -31,6 +46,9 @@ class Literal extends Expression {
   Literal(
     this.value,
   );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitLiteral(this);
+  }
 }
 
 class Unary extends Expression {
@@ -40,4 +58,7 @@ class Unary extends Expression {
     this.operator,
     this.right,
   );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitUnary(this);
+  }
 }

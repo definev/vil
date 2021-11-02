@@ -32,7 +32,13 @@ class AstGenerator extends GeneratorForAnnotation<Ast> {
 
     StringBuffer writer = StringBuffer();
 
-    writer.writeln('abstract class $baseClassName {}');
+    _visitorGenerator(baseClassName, astName, writer);
+
+    writer.writeln('abstract class $baseClassName {');
+
+    writer.writeln('T accept<T>(${baseClassName}Visitor<T> visitor);');
+
+    writer.writeln('}');
 
     for (int i = 0; i < astName.length; i++) {
       writer.writeln('class ${astName[i]} extends $baseClassName {');
@@ -48,9 +54,26 @@ class AstGenerator extends GeneratorForAnnotation<Ast> {
         writer.writeln('this.${argumentName[j]},');
       }
       writer.writeln(');');
+
+      writer.writeln('T accept<T>(${baseClassName}Visitor<T> visitor) {');
+      writer.writeln('return visitor.visit${astName[i]}(this);');
+      writer.writeln('}');
+
       writer.writeln('}');
     }
 
     return writer.toString();
+  }
+
+  void _visitorGenerator(
+      String baseClassName, List<String> astName, StringBuffer writer) {
+    writer.writeln('abstract class ${baseClassName}Visitor<T> {');
+
+    for (final name in astName) {
+      writer.writeln(
+          'T visit$name($name ${name[0].toLowerCase() + name.substring(1)});');
+    }
+
+    writer.writeln('}');
   }
 }

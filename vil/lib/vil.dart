@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:vil/ast_printer.dart';
+import 'package:vil/grammar/expression.dart';
 import 'package:vil/scanner.dart';
 import 'package:vil/token.dart';
+import 'package:vil/token_type.dart';
 
 class Vil {
   static bool hadError = false;
@@ -45,5 +48,15 @@ class Vil {
 }
 
 void main() {
-  Vil.runPrompt();
+  // -123 * (45.67)
+  final expression = Binary(
+    Unary(
+        Token(
+            line: 1, col: 1, lexeme: '-', literal: null, type: TokenType.minus),
+        Literal(123)),
+    Token(col: 6, line: 1, lexeme: '*', literal: null, type: TokenType.star),
+    Grouping(Literal(45.67)),
+  );
+
+  print(AstPrinter().print(expression));
 }
