@@ -1,7 +1,7 @@
 # Làm việc với cây cú pháp
 Ở phần trước, chúng ta đã định nghĩa được 4 biểu thức: **Literal**, **Grouping**, **Binary**, **Unary**.
 
-Mặc dù chúng ta chưa làm ra nó, hãy xem xét trình thông dịch sẽ làm gì với các cây cú pháp. Mỗi loại biểu thức trong ViL hoạt động khác nhau trong runtime. Điều đó có nghĩa là mỗi loại biểu thức cần một đoạn mã khác nhau để xử lí biểu thức. Với token, chúng ta có thể chỉ cần TokenType để phân biệt. Nhưng chúng ta không có enum “type” cho cây cú pháp, mà chỉ có một lớp riêng biệt cho mỗi biểu thức.
+Mặc dù chúng ta chưa làm ra nó, hãy xem xét trình thông dịch sẽ làm gì với các cây cú pháp. Mỗi loại biểu thức trong ViL hoạt động khác nhau trong runtime. Điều đó có nghĩa là mỗi loại biểu thức cần một đoạn mã khác nhau để xử lí. Với token, chúng ta có thể chỉ cần TokenType để phân biệt. Nhưng chúng ta không có enum “type” cho cây cú pháp, mà sẽ có một lớp riêng biệt cho mỗi biểu thức.
 
 Chúng ta có thể viết một chuỗi if-else dài xét từng loại:
 ```dart
@@ -11,9 +11,9 @@ if (expr is Binary) {
   // xử lí grouping
 } else // ...
 ```
-Nhưng loại kiểm tra như vậy rất chậm, phụ thuộc vào thứ tự sắp xếp if-else, đây không phải phương án tốt.
+Loại kiểm tra như vậy rất chậm, phụ thuộc vào thứ tự sắp xếp if-else, đây không phải phương án tốt.
 
-Chúng ta có một nhóm các lớp và chúng ta cần liên kết một phần hành vi với mỗi lớp. Giải pháp tự nhiên trong một ngôn ngữ hướng đối tượng như Dart là đưa các hành vi đó vào các phương thức trên chính các lớp. Chúng ta có thể thêm một phương thức trừu tượng interpret() trên lớp Expression mà sau đó mỗi lớp con sẽ triển khai nó.
+Chúng ta có một nhóm các lớp và chúng ta cần liên kết một phần hành vi với mỗi lớp. Giải pháp tự nhiên trong một ngôn ngữ hướng đối tượng như Dart là đưa các hành vi đó vào các phương thức trên chính các lớp. Chúng ta có thể thêm một phương thức trừu tượng `interpret()` trên lớp Expression mà sau đó mỗi lớp con sẽ triển khai nó.
 
 # Vấn đề của việc triển khai phương thức trừu tượng
 Vấn đề này về cơ bản nó có vẻ vẫn như vấn đề của cách triển khai trước. Chúng ta có một số loại và một số phương thức như “thông dịch”. Đối với từng cặp biểu thức và phương thức, chúng ta cần có một cách triển khai cụ thể. Ở đây ví dụ bảng sau:
@@ -22,7 +22,7 @@ Vấn đề này về cơ bản nó có vẻ vẫn như vấn đề của cách 
 
 Source: *craftinginterpreters.com*
 
-Mỗi hàng là biểu thức còn mỗi cột là phương thức cần triển khai. Với mỗi ô là phương thức thực hiện của từng biểu thức với từng hoạt động.
+Mỗi hàng là biểu thức còn mỗi cột là phương thức cần triển khai. Với mỗi ô là mã xử lí cho biểu thức với mỗi phương thức tương ứng.
 
 ## Cách tiếp cận với lớp
 Với Dart - một ngôn ngữ hướng đối tượng một lớp tương ứng với một hàng. Một khi thêm một biểu thức mới tương ứng với việc thêm một hàng nữa trong bảng tra cứu. 
@@ -282,3 +282,8 @@ void main() {
 Nếu bạn làm đúng máy in của chúng ta sẽ trả ra như này `(* (- 123) (group 45.67))`
 
 Vậy là đã hoàn thành, ở các bài viết sau chúng ta không sử dụng lại **AstPrinter** bạn có thể xóa nó đi hoặc comment lại. Hoặc nếu bạn muốn phát triển song song cả máy in AST của chúng ta thì có thể giữ lại và phát triển nó. Đây chỉ là một ví dụ cho cách triển khai **Vistor**.
+
+# Mã nguồn
+Bạn có thể theo dõi mã nguồn từng bài viết tại đây. Đừng ngại để lại cho mình một sao nhé 😍
+
+ViL : https://github.com/definev/vil
