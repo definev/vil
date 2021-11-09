@@ -53,6 +53,11 @@ class Scanner {
 
   String _peek() => source[_currentPosition];
 
+  String? _peekNext() {
+    if (_currentPosition + 1 > source.length) return null;
+    return source[_currentPosition + 1];
+  }
+
   void _addToken(TokenType type, {dynamic literal}) {
     _tokens.add(
       Token(
@@ -100,9 +105,16 @@ class Scanner {
     }
     if (_isAtEnd) error('Đã đến cuối file, phân tích số thất bại.');
 
+    if (_peek() == "." && (_peekNext() != null && _isNumber(_peekNext()!))) {
+      _autoIncrementPeek();
+      while (_isNumber(_peek())) {
+        _autoIncrementPeek();
+      }
+    }
+
     _addToken(
       TokenType.kSo,
-      literal: int.parse(
+      literal: double.parse(
         source.substring(_startPosition, _currentPosition),
       ),
     );
