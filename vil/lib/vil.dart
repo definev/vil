@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:vil/ast_printer.dart';
 import 'package:vil/grammar/expression.dart';
+import 'package:vil/parser.dart';
 import 'package:vil/scanner.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
@@ -12,8 +13,12 @@ class Vil {
   static void run(String source) {
     Scanner scanning = Scanner(source);
     List<Token> tokens = scanning.scan();
-    for (final token in tokens) {
-      print(token);
+
+    Parser parser = Parser(tokens);
+    Expression? expression = parser.parse();
+
+    if (expression != null) {
+      print(AstPrinter().print(expression));
     }
   }
 
@@ -45,18 +50,28 @@ class Vil {
     print('|$errorIn| [$line, $col]: Lỗi $errorAt: $message');
     hadError = true;
   }
+
+  static void parserError(Token token, String message) {
+    if (token.type == TokenType.eof) {
+      error(
+        errorIn: 'PARSER',
+        line: token.line,
+        col: token.col,
+        message: message,
+        errorAt: ' ở cuối file',
+      );
+    } else {
+      error(
+        errorIn: 'PARSER',
+        line: token.line,
+        col: token.col,
+        message: message,
+        errorAt: ' tại "${token.lexeme}"',
+      );
+    }
+  }
 }
 
 void main() {
-  // -123 * (45.67)
-  final expression = Binary(
-    Unary(
-        Token(
-            line: 1, col: 1, lexeme: '-', literal: null, type: TokenType.minus),
-        Literal(123)),
-    Token(col: 6, line: 1, lexeme: '*', literal: null, type: TokenType.star),
-    Grouping(Literal(45.67)),
-  );
-
-  print(AstPrinter().print(expression));
+  Vil.runPrompt();
 }

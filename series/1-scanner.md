@@ -271,6 +271,7 @@ class Scanner {
             _scanToken();
         }
         
+        _addToken(TokenType.eof);
         return _tokens;
     }
     
@@ -374,7 +375,7 @@ Source: `lib/scanner.dart`
 ```dart
 String _autoIncrementPeek() {...}
 
-String _peek() => source[_currentPosition];
+String _peek() => _isAtEnd ? '' : source[_currentPosition];
 ```
 
 Bạn hãy tự thực hiện tương tự với các cặp token so sánh nhé.
@@ -437,14 +438,13 @@ Source: `lib/scannner.dart`, hàm `_scanToken`, trong `switch` ... `case`.
 ```dart
 ...
 case ' ':
-    _col++;
     break;
 case '\n':
     _col = 1;
     _line++;
     break;
 case '\t':
-    _col += 2;
+    _col ++;
     break;
 case '\r':
     break;

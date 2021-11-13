@@ -51,7 +51,7 @@ class Scanner {
     return source[_currentPosition++];
   }
 
-  String _peek() => source[_currentPosition];
+  String _peek() => _isAtEnd ? '' : source[_currentPosition];
 
   String? _peekNext() {
     if (_currentPosition + 1 > source.length) return null;
@@ -140,6 +140,7 @@ class Scanner {
       _scanToken();
     }
 
+    _addToken(TokenType.eof);
     return _tokens;
   }
 
@@ -232,14 +233,13 @@ class Scanner {
         _addStringToken();
         break;
       case ' ':
-        _col++;
         break;
       case '\n':
         _col = 1;
         _line++;
         break;
       case '\t':
-        _col += 2;
+        _col++;
         break;
       case '\r':
         break;
