@@ -1,14 +1,17 @@
 import 'dart:io';
 
-import 'package:vil/ast_printer.dart';
 import 'package:vil/grammar/expression.dart';
+import 'package:vil/interpreter.dart';
 import 'package:vil/parser.dart';
 import 'package:vil/scanner.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
 
 class Vil {
+  static Interpreter interpreter = Interpreter();
+
   static bool hadError = false;
+  static bool hadRuntimeError = false;
 
   static void run(String source) {
     Scanner scanning = Scanner(source);
@@ -16,9 +19,8 @@ class Vil {
 
     Parser parser = Parser(tokens);
     Expression? expression = parser.parse();
-
     if (expression != null) {
-      print(AstPrinter().print(expression));
+      interpreter.interpret(expression);
     }
   }
 
@@ -27,6 +29,7 @@ class Vil {
     String source = file.readAsStringSync();
     run(source);
     if (hadError) exit(65);
+    if (hadRuntimeError) exit(70);
   }
 
   static void runPrompt() {
@@ -69,6 +72,16 @@ class Vil {
         errorAt: ' tại "${token.lexeme}"',
       );
     }
+  }
+
+  static void runtimeError(RuntimeError error) {
+    Vil.error(
+      errorIn: 'INTERPRETER',
+      line: error.token.line,
+      col: error.token.col,
+      message: error.message,
+    );
+    hadRuntimeError = true;
   }
 }
 

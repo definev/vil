@@ -150,6 +150,9 @@ class Parser {
     if (_match([TokenType.kSai])) {
       return Literal(false);
     }
+    if (_match([TokenType.kRong])) {
+      return Literal(null);
+    }
     if (_match([TokenType.leftParen])) {
       final expression = _expression();
       _consume(TokenType.rightParen, 'Thiếu ")" sau biểu thức.');
