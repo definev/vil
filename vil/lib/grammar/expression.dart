@@ -7,7 +7,9 @@ part 'expression.g.dart';
   "Binary   : Expression left, Token operator, Expression right",
   "Grouping : Expression expression",
   "Literal  : dynamic value",
-  "Unary    : Token operator, Expression right"
+  "Unary    : Token operator, Expression right",
+  "Variable : Token name",
+  "Assign   : Token name, Expression value"
 ])
 // ignore: unused_element
 class _Expression {}

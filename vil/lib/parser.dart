@@ -1,4 +1,5 @@
 import 'package:vil/grammar/expression.dart';
+import 'package:vil/grammar/statement.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
 import 'package:vil/vil.dart';
@@ -9,9 +10,14 @@ class Parser {
   final List<Token> _tokens;
   int _current = 0;
 
-  Expression? parse() {
+  List<Statement>? parse() {
     try {
-      return _expression();
+      List<Statement> statements = [];
+      while (!_isAtEnd) {
+        statements.add(_declaration());
+      }
+
+      return statements;
     } on ParserError catch (_) {
       return null;
     }
@@ -68,8 +74,85 @@ class Parser {
     return ParserError();
   }
 
+  // DECLARATION SECTION
+  Statement _declaration() {
+    if (_match([TokenType.kTao])) {
+      return _variableDeclaration();
+    }
+
+    return _statement();
+  }
+
+  Statement _variableDeclaration() {
+    final token = _consume(TokenType.identifier, 'Cần định nghĩa tên biến.');
+
+    Expression? initializer;
+    if (_match([TokenType.equal])) {
+      initializer = _expression();
+    }
+
+    _consume(TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh.');
+    return VariableDecl(token, initializer);
+  }
+
+  // STATEMENT SECTION
+  Statement _statement() {
+    if (_match([TokenType.kXuat])) {
+      return _printStatement();
+    }
+    if (_match([TokenType.leftBrace])) {
+      return _blockStatement();
+    }
+
+    return _expressionStatement();
+  }
+
+  Statement _blockStatement() {
+    final statements = <Statement>[];
+
+    while (!_check(TokenType.rightBrace) && !_isAtEnd) {
+      statements.add(_declaration());
+    }
+    _consume(TokenType.rightBrace, 'Thiếu dấu "}" sau khối lệnh.');
+
+    return Block(statements);
+  }
+
+  Statement _printStatement() {
+    final expression = _expression();
+    _consume(
+        TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh xuất ra màn hình.');
+
+    return Print(expression);
+  }
+
+  Statement _expressionStatement() {
+    final expression = _expression();
+    _consume(TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh.');
+
+    return Expr(expression);
+  }
+
+  // EXPRESSION SECTION
   Expression _expression() {
-    return _equality();
+    return _assignment();
+  }
+
+  Expression _assignment() {
+    final expression = _equality();
+
+    if (_match([TokenType.equal])) {
+      final equals = _previous();
+      final value = _assignment();
+
+      if (expression is Variable) {
+        return Assign(expression.name, value);
+      }
+
+      _error(equals, 'Không thể gán giá trị nếu không đó không là biến.');
+    }
+
+    return expression;
   }
 
   Expression _equality() {
@@ -157,6 +240,9 @@ class Parser {
       final expression = _expression();
       _consume(TokenType.rightParen, 'Thiếu ")" sau biểu thức.');
       return Grouping(expression);
+    }
+    if (_match([TokenType.identifier])) {
+      return Variable(_previous());
     }
 
     throw _error(_peek(), 'Token chưa có trong bảng quy tắc.');

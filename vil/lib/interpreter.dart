@@ -1,16 +1,26 @@
+import 'package:vil/environment.dart';
 import 'package:vil/grammar/expression.dart';
+import 'package:vil/grammar/statement.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
 import 'package:vil/vil.dart';
 
-class Interpreter implements ExpressionVisitor<dynamic> {
-  void interpret(Expression expression) {
+class Interpreter
+    implements ExpressionVisitor<dynamic>, StatementVisitor<void> {
+  Environment _environment = Environment();
+
+  void interpret(List<Statement> statements) {
     try {
-      final value = _evaluate(expression);
-      print(_stringify(value));
+      for (final statement in statements) {
+        _execute(statement);
+      }
     } on RuntimeError catch (error) {
       Vil.runtimeError(error);
     }
+  }
+
+  void _execute(Statement statement) {
+    statement.accept(this);
   }
 
   String _stringify(dynamic value) {
@@ -47,6 +57,7 @@ class Interpreter implements ExpressionVisitor<dynamic> {
     }
   }
 
+  // EXPRESSION VISITOR
   @override
   dynamic visitBinary(Binary binary) {
     final left = _evaluate(binary.left);
@@ -109,6 +120,49 @@ class Interpreter implements ExpressionVisitor<dynamic> {
       default:
         return null;
     }
+  }
+
+  @override
+  dynamic visitVariable(Variable variable) {
+    return _environment.get(variable.name);
+  }
+
+  @override
+  dynamic visitAssign(Assign assign) {
+    final value = _evaluate(assign.value);
+    _environment.assign(assign.name, value);
+    return value;
+  }
+
+  // STATEMENT VISITOR
+  @override
+  void visitExpr(Expr exprStmt) {}
+
+  @override
+  void visitPrint(Print printStmt) {
+    final value = _evaluate(printStmt.expression);
+    print(_stringify(value));
+  }
+
+  @override
+  void visitVariableDecl(VariableDecl variableDeclStmt) {
+    dynamic value = null;
+    if (variableDeclStmt.value != null) {
+      value = _evaluate(variableDeclStmt.value!);
+    }
+    _environment.define(variableDeclStmt.name.lexeme, value);
+  }
+
+  @override
+  void visitBlock(Block block) {
+    Environment blockEnv = Environment(_environment);
+    _environment = blockEnv;
+
+    for (final statement in block.statements) {
+      _execute(statement);
+    }
+
+    _environment = _environment.parent!;
   }
 }
 

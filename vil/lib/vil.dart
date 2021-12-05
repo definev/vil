@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:vil/grammar/expression.dart';
 import 'package:vil/interpreter.dart';
 import 'package:vil/parser.dart';
 import 'package:vil/scanner.dart';
@@ -18,9 +17,9 @@ class Vil {
     List<Token> tokens = scanning.scan();
 
     Parser parser = Parser(tokens);
-    Expression? expression = parser.parse();
-    if (expression != null) {
-      interpreter.interpret(expression);
+    final statements = parser.parse();
+    if (statements != null) {
+      interpreter.interpret(statements);
     }
   }
 

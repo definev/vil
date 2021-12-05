@@ -11,6 +11,8 @@ abstract class ExpressionVisitor<T> {
   T visitGrouping(Grouping grouping);
   T visitLiteral(Literal literal);
   T visitUnary(Unary unary);
+  T visitVariable(Variable variable);
+  T visitAssign(Assign assign);
 }
 
 abstract class Expression {
@@ -60,5 +62,27 @@ class Unary extends Expression {
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
     return visitor.visitUnary(this);
+  }
+}
+
+class Variable extends Expression {
+  final Token name;
+  Variable(
+    this.name,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitVariable(this);
+  }
+}
+
+class Assign extends Expression {
+  final Token name;
+  final Expression value;
+  Assign(
+    this.name,
+    this.value,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitAssign(this);
   }
 }
