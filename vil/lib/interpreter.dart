@@ -141,7 +141,7 @@ class Interpreter
   @override
   void visitPrint(Print printStmt) {
     final value = _evaluate(printStmt.expression);
-    print(_stringify(value));
+    Vil.native.out(_stringify(value));
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:vil/interpreter.dart';
+import 'package:vil/native_methods.dart';
 import 'package:vil/parser.dart';
 import 'package:vil/scanner.dart';
 import 'package:vil/token.dart';
@@ -8,6 +9,7 @@ import 'package:vil/token_type.dart';
 
 class Vil {
   static Interpreter interpreter = Interpreter();
+  static NativeMethods native = Console();
 
   static bool hadError = false;
   static bool hadRuntimeError = false;

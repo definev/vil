@@ -1,0 +1,15 @@
+{
+  tạo a = " Scope: 1 ";
+  tạo b = " Scope: 1 ";
+  tạo c = " Scope: 1 ";
+  {
+      tạo b = " Scope: 2 ";
+      tạo c = " Scope: 2 ";
+      {
+          tạo a = " Scope: 3 ";
+          xuất a + b + c;
+      }
+      xuất a + b + c;
+  }
+  xuất a + b + c;
+}

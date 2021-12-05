@@ -32,6 +32,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "boolean_selector",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/boolean_selector-2.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "build",
       "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/build-2.1.1",
       "packageUri": "lib/",
@@ -112,6 +118,12 @@
     {
       "name": "convert",
       "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/convert-3.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "coverage",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/coverage-1.0.3",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -218,6 +230,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "node_preamble",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/node_preamble-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "package_config",
       "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/package_config-2.0.2",
       "packageUri": "lib/",
@@ -254,6 +272,18 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "shelf_packages_handler",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/shelf_packages_handler-3.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "shelf_static",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/shelf_static-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "shelf_web_socket",
       "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-1.0.1",
       "packageUri": "lib/",
@@ -262,6 +292,18 @@
     {
       "name": "source_gen",
       "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/source_gen-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "source_map_stack_trace",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/source_map_stack_trace-2.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "source_maps",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/source_maps-0.10.10",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -302,6 +344,24 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "test",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/test-1.19.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "test_api",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/test_api-0.4.8",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "test_core",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/test_core-0.4.9",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "timing",
       "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/timing-1.0.0",
       "packageUri": "lib/",
@@ -310,6 +370,12 @@
     {
       "name": "typed_data",
       "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/typed_data-1.3.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "vm_service",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/vm_service-7.5.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -326,6 +392,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "webkit_inspection_protocol",
+      "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/webkit_inspection_protocol-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "yaml",
       "rootUri": "file:///home/definev/.pub-cache/hosted/pub.dartlang.org/yaml-3.1.0",
       "packageUri": "lib/",
@@ -338,7 +410,7 @@
       "languageVersion": "2.14"
     }
   ],
-  "generated": "2021-10-31T14:23:46.377648Z",
+  "generated": "2021-12-05T17:43:37.284128Z",
   "generator": "pub",
   "generatorVersion": "2.14.4"
 }
