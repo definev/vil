@@ -90,6 +90,8 @@ class Interpreter
       case TokenType.greaterEqual:
         _checkIsNumber([left, right], binary.operator);
         return left >= right;
+      case TokenType.less:
+        return left < right;
       case TokenType.lessEqual:
         _checkIsNumber([left, right], binary.operator);
         return left <= right;
@@ -165,7 +167,9 @@ class Interpreter
 
   // STATEMENT VISITOR
   @override
-  void visitExpr(Expr exprStmt) {}
+  void visitExpr(Expr exprStmt) {
+    _evaluate(exprStmt.expression);
+  }
 
   @override
   void visitPrint(Print printStmt) {
@@ -204,6 +208,13 @@ class Interpreter
       if (ifStatement.elseStatement != null) {
         _execute(ifStatement.elseStatement!);
       }
+    }
+  }
+
+  @override
+  void visitWhileLoop(WhileLoop whileLoop) {
+    while (_isTruthy(_evaluate(whileLoop.condition))) {
+      _execute(whileLoop.body);
     }
   }
 }

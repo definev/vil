@@ -12,6 +12,7 @@ abstract class StatementVisitor<T> {
   T visitVariableDecl(VariableDecl variableDecl);
   T visitBlock(Block block);
   T visitIfStatement(IfStatement ifStatement);
+  T visitWhileLoop(WhileLoop whileLoop);
 }
 
 abstract class Statement {
@@ -71,5 +72,17 @@ class IfStatement extends Statement {
   );
   T accept<T>(StatementVisitor<T> visitor) {
     return visitor.visitIfStatement(this);
+  }
+}
+
+class WhileLoop extends Statement {
+  final Expression condition;
+  final Statement body;
+  WhileLoop(
+    this.condition,
+    this.body,
+  );
+  T accept<T>(StatementVisitor<T> visitor) {
+    return visitor.visitWhileLoop(this);
   }
 }

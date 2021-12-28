@@ -13,7 +13,14 @@ variableDecl        => "tạo" IDENTIFIER ("=" expression)? ";" ;
 statement           => expressionStatement
                     | printStatement
                     | ifStatement
+                    | whileStatement
                     | block ;
+
+forStatement        => "lặp" "(" ( variableDecl | expressionStatement | ";" )
+                    expression? ";"
+                    expression? ")" statement ;
+
+whileStatement      => "khi" "(" condition ")" statement ;
 
 expressionStatement => expression ";" ;
 printStatement      => "xuất" expression ";" ;

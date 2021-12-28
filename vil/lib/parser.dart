@@ -106,8 +106,26 @@ class Parser {
     if (_match([TokenType.kNeu])) {
       return _ifStatement();
     }
+    if (_match([TokenType.kKhi])) {
+      return _whileStatement();
+    }
+    // if (_match([TokenType.kLap])) {
+    //   return _forStatement();
+    // }
 
     return _expressionStatement();
+  }
+
+  // Statement _forStatement() {
+
+  // }
+
+  Statement _whileStatement() {
+    _consume(TokenType.leftParen, 'Thiếu dấu "(" sau từ khóa "lặp".');
+    final condition = _expression();
+    _consume(TokenType.rightParen, 'Thiếu dấu ")" sau điều kiện lặp.');
+    final body = _statement();
+    return WhileLoop(condition, body);
   }
 
   Statement _ifStatement() {
