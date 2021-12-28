@@ -9,7 +9,9 @@ part 'expression.g.dart';
   "Literal  : dynamic value",
   "Unary    : Token operator, Expression right",
   "Variable : Token name",
-  "Assign   : Token name, Expression value"
+  "Ternary  : Expression condition, Expression thenExpression, Expression elseExpression",
+  "Assign   : Token name, Expression value",
+  "Logical  : Expression left, Token operator, Expression right",
 ])
 // ignore: unused_element
 class _Expression {}

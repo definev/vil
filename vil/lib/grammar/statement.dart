@@ -11,5 +11,6 @@ part 'statement.g.dart';
   'Expr         : Expression expression',
   'VariableDecl : Token name, Expression? value',
   'Block        : List<Statement> statements',
+  'IfStatement  : Expression condition, Statement thenStatement, Statement? elseStatement',
 ])
 class _Statement {}

@@ -12,7 +12,7 @@ void main() {
     Vil.runFile(path);
     expect(
       (Vil.native as TestingNative).content,
-      '''1\nhello\nđúng\nsai\n''',
+      '1\nhello\nđúng\nsai\n',
     );
   });
 }

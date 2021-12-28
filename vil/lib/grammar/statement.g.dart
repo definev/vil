@@ -11,6 +11,7 @@ abstract class StatementVisitor<T> {
   T visitExpr(Expr expr);
   T visitVariableDecl(VariableDecl variableDecl);
   T visitBlock(Block block);
+  T visitIfStatement(IfStatement ifStatement);
 }
 
 abstract class Statement {
@@ -56,5 +57,19 @@ class Block extends Statement {
   );
   T accept<T>(StatementVisitor<T> visitor) {
     return visitor.visitBlock(this);
+  }
+}
+
+class IfStatement extends Statement {
+  final Expression condition;
+  final Statement thenStatement;
+  final Statement? elseStatement;
+  IfStatement(
+    this.condition,
+    this.thenStatement,
+    this.elseStatement,
+  );
+  T accept<T>(StatementVisitor<T> visitor) {
+    return visitor.visitIfStatement(this);
   }
 }

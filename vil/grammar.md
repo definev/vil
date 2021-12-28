@@ -12,6 +12,7 @@ variableDecl        => "tạo" IDENTIFIER ("=" expression)? ";" ;
 
 statement           => expressionStatement
                     | printStatement
+                    | ifStatement
                     | block ;
 
 expressionStatement => expression ";" ;

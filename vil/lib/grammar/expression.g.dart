@@ -12,7 +12,9 @@ abstract class ExpressionVisitor<T> {
   T visitLiteral(Literal literal);
   T visitUnary(Unary unary);
   T visitVariable(Variable variable);
+  T visitTernary(Ternary ternary);
   T visitAssign(Assign assign);
+  T visitLogical(Logical logical);
 }
 
 abstract class Expression {
@@ -75,6 +77,20 @@ class Variable extends Expression {
   }
 }
 
+class Ternary extends Expression {
+  final Expression condition;
+  final Expression thenExpression;
+  final Expression elseExpression;
+  Ternary(
+    this.condition,
+    this.thenExpression,
+    this.elseExpression,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitTernary(this);
+  }
+}
+
 class Assign extends Expression {
   final Token name;
   final Expression value;
@@ -84,5 +100,19 @@ class Assign extends Expression {
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
     return visitor.visitAssign(this);
+  }
+}
+
+class Logical extends Expression {
+  final Expression left;
+  final Token operator;
+  final Expression right;
+  Logical(
+    this.left,
+    this.operator,
+    this.right,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitLogical(this);
   }
 }

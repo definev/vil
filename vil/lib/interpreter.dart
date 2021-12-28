@@ -134,6 +134,35 @@ class Interpreter
     return value;
   }
 
+  @override
+  dynamic visitTernary(Ternary ternary) {
+    final condition = _evaluate(ternary.condition);
+
+    if (_isTruthy(condition)) {
+      return _evaluate(ternary.thenExpression);
+    } else {
+      return _evaluate(ternary.elseExpression);
+    }
+  }
+
+  @override
+  dynamic visitLogical(Logical logical) {
+    final left = _evaluate(logical.left);
+    final right = _evaluate(logical.right);
+
+    switch (logical.operator.type) {
+      case TokenType.kOr:
+        return _isTruthy(left) || _isTruthy(right);
+      case TokenType.kAnd:
+        return _isTruthy(left) && _isTruthy(right);
+      default:
+        throw RuntimeError(
+          message: 'Điều này không thể xảy ra.',
+          token: logical.operator,
+        );
+    }
+  }
+
   // STATEMENT VISITOR
   @override
   void visitExpr(Expr exprStmt) {}
@@ -163,6 +192,19 @@ class Interpreter
     }
 
     _environment = _environment.parent!;
+  }
+
+  @override
+  void visitIfStatement(IfStatement ifStatement) {
+    final condition = _evaluate(ifStatement.condition);
+
+    if (_isTruthy(condition)) {
+      _execute(ifStatement.thenStatement);
+    } else {
+      if (ifStatement.elseStatement != null) {
+        _execute(ifStatement.elseStatement!);
+      }
+    }
   }
 }
 

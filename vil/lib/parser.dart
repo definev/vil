@@ -103,8 +103,21 @@ class Parser {
     if (_match([TokenType.leftBrace])) {
       return _blockStatement();
     }
+    if (_match([TokenType.kNeu])) {
+      return _ifStatement();
+    }
 
     return _expressionStatement();
+  }
+
+  Statement _ifStatement() {
+    final condition = _expression();
+    final thenStatement = _statement();
+    Statement? elseStatement;
+    if (_match([TokenType.kHoac])) {
+      elseStatement = _statement();
+    }
+    return IfStatement(condition, thenStatement, elseStatement);
   }
 
   Statement _blockStatement() {
@@ -139,7 +152,7 @@ class Parser {
   }
 
   Expression _assignment() {
-    final expression = _equality();
+    final expression = _ternary();
 
     if (_match([TokenType.equal])) {
       final equals = _previous();
@@ -153,6 +166,45 @@ class Parser {
     }
 
     return expression;
+  }
+
+  Expression _ternary() {
+    Expression expression = _or();
+
+    if (_match([TokenType.question])) {
+      final thenExpression = _ternary();
+      _consume(TokenType.colon, 'Toán tử ba ngôi phải có dấu ":".');
+      final elseExpression = _ternary();
+      expression = Ternary(expression, thenExpression, elseExpression);
+    }
+
+    return expression;
+  }
+
+  Expression _or() {
+    Expression left = _and();
+
+    while (_match([TokenType.kOr])) {
+      final operator = _previous();
+      final right = _and();
+
+      left = Logical(left, operator, right);
+    }
+
+    return left;
+  }
+
+  Expression _and() {
+    Expression left = _equality();
+
+    while (_match([TokenType.kAnd])) {
+      final operator = _previous();
+      final right = _equality();
+
+      left = Logical(left, operator, right);
+    }
+
+    return left;
   }
 
   Expression _equality() {
