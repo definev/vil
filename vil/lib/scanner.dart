@@ -1,3 +1,4 @@
+import 'package:vil/loc.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
 import 'package:vil/vil.dart';
@@ -18,8 +19,7 @@ class Scanner {
   int _startPosition = 0;
   int _currentPosition = 0;
 
-  int _col = 1;
-  int _line = 1;
+  Loc _loc = Loc(1, 1);
 
   Map<String, TokenType> _keywords = {
     "khi": TokenType.kKhi,
@@ -43,11 +43,11 @@ class Scanner {
   bool get _isAtEnd => _currentPosition >= source.length;
 
   void error(String message) {
-    Vil.error(errorIn: 'SCANNER', line: _line, col: _col, message: message);
+    Vil.error(errorIn: 'SCANNER', loc: _loc, message: message);
   }
 
   String _autoIncrementPeek() {
-    _col++;
+    _loc = _loc.next;
     return source[_currentPosition++];
   }
 
@@ -62,8 +62,10 @@ class Scanner {
     _tokens.add(
       Token(
         type: type,
-        col: _col - (_currentPosition - _startPosition - 1),
-        line: _line,
+        loc: Loc(
+          _loc.x - (_currentPosition - _startPosition - 1),
+          _loc.y,
+        ),
         lexeme: source.substring(_startPosition, _currentPosition),
         literal: literal,
       ),
@@ -235,11 +237,10 @@ class Scanner {
       case ' ':
         break;
       case '\n':
-        _col = 1;
-        _line++;
+        _loc = _loc.down;
         break;
       case '\t':
-        _col++;
+        _loc = _loc.next;
         break;
       case '\r':
         break;

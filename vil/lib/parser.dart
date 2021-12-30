@@ -109,16 +109,52 @@ class Parser {
     if (_match([TokenType.kKhi])) {
       return _whileStatement();
     }
-    // if (_match([TokenType.kLap])) {
-    //   return _forStatement();
-    // }
+    if (_match([TokenType.kLap])) {
+      return _forStatement();
+    }
 
     return _expressionStatement();
   }
 
-  // Statement _forStatement() {
+  Statement _forStatement() {
+    _consume(TokenType.leftParen, 'Thiếu dấu "(" đằng sau từ khóa "lặp".');
+    Statement? initializer;
+    if (!_check(TokenType.semicolon)) {
+      if (_match([TokenType.kTao])) {
+        initializer = _variableDeclaration();
+      } else {
+        initializer = _expressionStatement();
+      }
+    }
+    Expression? condition;
+    if (!_check(TokenType.semicolon)) {
+      condition = _expression();
+    }
 
-  // }
+    _consume(TokenType.semicolon, 'Thiếu dấu ";" trong vòng lặp.');
+    Expression? increment;
+    if (!_check(TokenType.semicolon)) {
+      increment = _expression();
+    }
+
+    _consume(TokenType.rightParen, 'Thiếu dấu ")" sau điều kiện lặp.');
+    Statement body = _statement();
+
+    if (increment != null) {
+      body = Block([body, Expr(increment)]);
+    }
+    if (condition == null) {
+      condition = Literal(true);
+    }
+    if (initializer != null) {
+      return Block([
+        initializer,
+        WhileLoop(condition, body),
+      ]);
+    }
+
+    return WhileLoop(condition, body);
+  }
 
   Statement _whileStatement() {
     _consume(TokenType.leftParen, 'Thiếu dấu "(" sau từ khóa "lặp".');

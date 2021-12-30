@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:vil/interpreter.dart';
+import 'package:vil/loc.dart';
 import 'package:vil/native_methods.dart';
 import 'package:vil/parser.dart';
 import 'package:vil/scanner.dart';
@@ -46,12 +47,11 @@ class Vil {
 
   static void error({
     required String errorIn,
-    required int line,
-    required int col,
+    required Loc loc,
     required String message,
     String? errorAt,
   }) {
-    print('|$errorIn| [$line, $col]: Lỗi $errorAt: $message');
+    print('|$errorIn| [$loc]: Lỗi $errorAt: $message');
     hadError = true;
   }
 
@@ -59,16 +59,14 @@ class Vil {
     if (token.type == TokenType.eof) {
       error(
         errorIn: 'PARSER',
-        line: token.line,
-        col: token.col,
+        loc: token.loc,
         message: message,
         errorAt: ' ở cuối file',
       );
     } else {
       error(
         errorIn: 'PARSER',
-        line: token.line,
-        col: token.col,
+        loc: token.loc,
         message: message,
         errorAt: ' tại "${token.lexeme}"',
       );
@@ -78,8 +76,7 @@ class Vil {
   static void runtimeError(RuntimeError error) {
     Vil.error(
       errorIn: 'INTERPRETER',
-      line: error.token.line,
-      col: error.token.col,
+      loc: error.token.loc,
       message: error.message,
     );
     hadRuntimeError = true;
@@ -88,5 +85,5 @@ class Vil {
 
 void main() {
   Vil.runFile(
-      '/Users/daiduong/Desktop/Project/Github Project/vil/vil/test/testcase/while_loop.vil');
+      '/Users/daiduong/Desktop/Project/Github Project/vil/vil/test/testcase/for_loop.vil');
 }
