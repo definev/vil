@@ -14,7 +14,10 @@ statement           => expressionStatement
                     | printStatement
                     | ifStatement
                     | whileStatement
-                    | block ;
+                    | block
+                    | breakStatement ;
+
+breakStatement      => "thoát" ";" ;
 
 forStatement        => "lặp" "(" ( variableDecl | expressionStatement | ";" )
                     expression? ";"
