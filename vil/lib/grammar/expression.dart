@@ -8,6 +8,7 @@ part 'expression.g.dart';
   "Grouping : Expression expression",
   "Literal  : dynamic value",
   "Unary    : Token operator, Expression right",
+  "Postfix   : Expression left, Token operator",
   "Variable : Token name",
   "Ternary  : Expression condition, Expression thenExpression, Expression elseExpression",
   "Assign   : Token name, Expression value",

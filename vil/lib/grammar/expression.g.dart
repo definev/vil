@@ -11,6 +11,7 @@ abstract class ExpressionVisitor<T> {
   T visitGrouping(Grouping grouping);
   T visitLiteral(Literal literal);
   T visitUnary(Unary unary);
+  T visitPostfix(Postfix postfix);
   T visitVariable(Variable variable);
   T visitTernary(Ternary ternary);
   T visitAssign(Assign assign);
@@ -65,6 +66,18 @@ class Unary extends Expression {
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
     return visitor.visitUnary(this);
+  }
+}
+
+class Postfix extends Expression {
+  final Expression left;
+  final Token operator;
+  const Postfix(
+    this.left,
+    this.operator,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitPostfix(this);
   }
 }
 

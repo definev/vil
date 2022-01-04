@@ -29,7 +29,8 @@ expressionStatement => expression ";" ;
 printStatement      => "xuất" expression ";" ;
 block               => "{" declaration* "}" ;
 
-expression          => equality ;
+expression          => postfix ;
+postfix              => equality ( "++" | "--" )+ ;
 equality            => comparison ( ( "==" | "!=" ) comparison )* ;
 comparison          => term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term                => factor ( ( "+" | "-" ) factor )* ;

@@ -13,7 +13,7 @@ abstract class StatementVisitor<T> {
   T visitBlock(Block block);
   T visitIfStatement(IfStatement ifStatement);
   T visitWhileLoop(WhileLoop whileLoop);
-  T visitBreakStmt(BreakStatement breakStmt);
+  T visitBreakStatement(BreakStatement breakStatement);
 }
 
 abstract class Statement {
@@ -92,6 +92,6 @@ class WhileLoop extends Statement {
 class BreakStatement extends Statement {
   const BreakStatement();
   T accept<T>(StatementVisitor<T> visitor) {
-    return visitor.visitBreakStmt(this);
+    return visitor.visitBreakStatement(this);
   }
 }

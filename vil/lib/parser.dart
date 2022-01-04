@@ -257,16 +257,27 @@ class Parser {
   }
 
   Expression _and() {
-    Expression left = _equality();
+    Expression left = _postfix();
 
     while (_match([TokenType.kAnd])) {
       final operator = _previous();
-      final right = _equality();
+      final right = _postfix();
 
       left = Logical(left, operator, right);
     }
 
     return left;
+  }
+
+  Expression _postfix() {
+    var expression = _equality();
+
+    if (_match([TokenType.minusMinus, TokenType.plusPlus])) {
+      final operator = _previous();
+      expression = Postfix(expression, operator);
+    }
+
+    return expression;
   }
 
   Expression _equality() {
@@ -327,7 +338,12 @@ class Parser {
   }
 
   Expression _unary() {
-    if (_match([TokenType.bang, TokenType.minus])) {
+    if (_match([
+      TokenType.bang,
+      TokenType.minus,
+      TokenType.minusMinus,
+      TokenType.plusPlus,
+    ])) {
       final operator = _previous();
       final right = _unary();
 

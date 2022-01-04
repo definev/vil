@@ -59,6 +59,38 @@ class Interpreter
 
   // EXPRESSION VISITOR
   @override
+  visitPostfix(Postfix postfix) {
+    final left = _evaluate(postfix.left);
+    switch (postfix.operator.type) {
+      case TokenType.plusPlus:
+        _checkIsNumber([left], postfix.operator);
+        if (postfix.left is Variable) {
+          _environment.assign(
+            (postfix.left as Variable).name,
+            left + 1,
+          );
+          return left + 1;
+        }
+        break;
+      case TokenType.minusMinus:
+        _checkIsNumber([left], postfix.operator);
+        if (postfix.left is Variable) {
+          _environment.assign(
+            (postfix.left as Variable).name,
+            left - 1,
+          );
+          return left - 1;
+        }
+        break;
+      default:
+        throw RuntimeError(
+          message: 'Điều này không thể xảy ra.',
+          token: postfix.operator,
+        );
+    }
+  }
+
+  @override
   dynamic visitBinary(Binary binary) {
     final left = _evaluate(binary.left);
     final right = _evaluate(binary.right);
@@ -119,6 +151,18 @@ class Interpreter
         return -right;
       case TokenType.bang:
         return !_isTruthy(right);
+      case TokenType.plusPlus:
+        _checkIsNumber([right], unary.operator);
+        if (unary.right is Variable) {
+          _environment.assign((unary.right as Variable).name, right + 1);
+        }
+        return right;
+      case TokenType.minusMinus:
+        _checkIsNumber([right], unary.operator);
+        if (unary.right is Variable) {
+          _environment.assign((unary.right as Variable).name, right - 1);
+        }
+        return right;
       default:
         return null;
     }
@@ -221,7 +265,7 @@ class Interpreter
   }
 
   @override
-  void visitBreakStmt(BreakStatement breakStmt) {
+  void visitBreakStatement(BreakStatement breakStatement) {
     throw BreakEvent();
   }
 }
