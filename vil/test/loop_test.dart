@@ -20,5 +20,13 @@ void main() {
 
       expect((Vil.native as TestingNative).content, '0\n1\n2\n3\n4\n');
     });
+
+    test('For loop with break', () {
+      setupMockVil();
+      final path = '${Path.current}/test/testcase/for_loop_with_break.vil';
+      Vil.runFile(path);
+
+      expect((Vil.native as TestingNative).content, '0\n1\n2\n3\n4\n');
+    });
   });
 }

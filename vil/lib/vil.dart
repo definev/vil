@@ -84,6 +84,5 @@ class Vil {
 }
 
 void main() {
-  Vil.runFile(
-      '/Users/daiduong/Desktop/Project/Github Project/vil/vil/test/testcase/for_loop.vil');
+  Vil.runPrompt();
 }
