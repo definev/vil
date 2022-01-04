@@ -25,35 +25,43 @@ class AstGenerator extends GeneratorForAnnotation<Ast> {
     final rawAstList = rawRawAstList.map((e) => e.toStringValue()!).toList();
 
     /// Tách thành hai mảng tên và biến riêng
-    List<String> astName =
-        rawAstList.map((e) => e.split(":")[0].trim()).toList();
-    List<String> astArgument =
-        rawAstList.map((e) => e.split(":")[1].trim()).toList();
+    List<String> astName = [];
+    List<String> astArgument = [];
+
+    for (final astClass in rawAstList) {
+      final args = astClass.split(':');
+      astName.add(args[0].trim());
+      astArgument.add(args[1].trim());
+    }
 
     StringBuffer writer = StringBuffer();
 
     _visitorGenerator(baseClassName, astName, writer);
 
     writer.writeln('abstract class $baseClassName {');
-
+    writer.writeln('const $baseClassName();');
     writer.writeln('T accept<T>(${baseClassName}Visitor<T> visitor);');
-
     writer.writeln('}');
 
     for (int i = 0; i < astName.length; i++) {
       writer.writeln('class ${astName[i]} extends $baseClassName {');
-      List<String> argument =
-          astArgument[i].split(",").map((e) => e.trim()).toList();
-      for (int j = 0; j < argument.length; j++) {
-        writer.writeln('final ${argument[j]};');
-      }
+      if (astArgument[i].isNotEmpty) {
+        List<String> argument =
+            astArgument[i].split(",").map((e) => e.trim()).toList();
+        for (int j = 0; j < argument.length; j++) {
+          writer.writeln('final ${argument[j]};');
+        }
 
-      final argumentName = argument.map((e) => e.split(" ")[1].trim()).toList();
-      writer.writeln('${astName[i]}(');
-      for (int j = 0; j < argumentName.length; j++) {
-        writer.writeln('this.${argumentName[j]},');
+        final argumentName =
+            argument.map((e) => e.split(" ")[1].trim()).toList();
+        writer.writeln('const ${astName[i]}(');
+        for (int j = 0; j < argumentName.length; j++) {
+          writer.writeln('this.${argumentName[j]},');
+        }
+        writer.writeln(');');
+      } else {
+        writer.writeln('const ${astName[i]}();');
       }
-      writer.writeln(');');
 
       writer.writeln('T accept<T>(${baseClassName}Visitor<T> visitor) {');
       writer.writeln('return visitor.visit${astName[i]}(this);');
