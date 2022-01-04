@@ -112,8 +112,16 @@ class Parser {
     if (_match([TokenType.kLap])) {
       return _forStatement();
     }
+    if (_match([TokenType.kThoat])) {
+      return _breakStatement();
+    }
 
     return _expressionStatement();
+  }
+
+  Statement _breakStatement() {
+    _consume(TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh "thoát".');
+    return BreakStatement();
   }
 
   Statement _forStatement() {

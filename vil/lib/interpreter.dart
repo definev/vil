@@ -213,9 +213,16 @@ class Interpreter
 
   @override
   void visitWhileLoop(WhileLoop whileLoop) {
-    while (_isTruthy(_evaluate(whileLoop.condition))) {
-      _execute(whileLoop.body);
-    }
+    try {
+      while (_isTruthy(_evaluate(whileLoop.condition))) {
+        _execute(whileLoop.body);
+      }
+    } on BreakEvent catch (_) {}
+  }
+
+  @override
+  void visitBreakStmt(BreakStatement breakStmt) {
+    throw BreakEvent();
   }
 }
 
@@ -231,3 +238,5 @@ class RuntimeError {
   @override
   String toString() => '$message';
 }
+
+class BreakEvent {}

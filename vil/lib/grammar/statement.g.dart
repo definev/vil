@@ -13,15 +13,17 @@ abstract class StatementVisitor<T> {
   T visitBlock(Block block);
   T visitIfStatement(IfStatement ifStatement);
   T visitWhileLoop(WhileLoop whileLoop);
+  T visitBreakStmt(BreakStatement breakStmt);
 }
 
 abstract class Statement {
+  const Statement();
   T accept<T>(StatementVisitor<T> visitor);
 }
 
 class Print extends Statement {
   final Expression expression;
-  Print(
+  const Print(
     this.expression,
   );
   T accept<T>(StatementVisitor<T> visitor) {
@@ -31,7 +33,7 @@ class Print extends Statement {
 
 class Expr extends Statement {
   final Expression expression;
-  Expr(
+  const Expr(
     this.expression,
   );
   T accept<T>(StatementVisitor<T> visitor) {
@@ -42,7 +44,7 @@ class Expr extends Statement {
 class VariableDecl extends Statement {
   final Token name;
   final Expression? value;
-  VariableDecl(
+  const VariableDecl(
     this.name,
     this.value,
   );
@@ -53,7 +55,7 @@ class VariableDecl extends Statement {
 
 class Block extends Statement {
   final List<Statement> statements;
-  Block(
+  const Block(
     this.statements,
   );
   T accept<T>(StatementVisitor<T> visitor) {
@@ -65,7 +67,7 @@ class IfStatement extends Statement {
   final Expression condition;
   final Statement thenStatement;
   final Statement? elseStatement;
-  IfStatement(
+  const IfStatement(
     this.condition,
     this.thenStatement,
     this.elseStatement,
@@ -78,11 +80,18 @@ class IfStatement extends Statement {
 class WhileLoop extends Statement {
   final Expression condition;
   final Statement body;
-  WhileLoop(
+  const WhileLoop(
     this.condition,
     this.body,
   );
   T accept<T>(StatementVisitor<T> visitor) {
     return visitor.visitWhileLoop(this);
+  }
+}
+
+class BreakStatement extends Statement {
+  const BreakStatement();
+  T accept<T>(StatementVisitor<T> visitor) {
+    return visitor.visitBreakStmt(this);
   }
 }

@@ -7,11 +7,12 @@ import 'package:vil/token.dart';
 part 'statement.g.dart';
 
 @Ast([
-  'Print        : Expression expression',
-  'Expr         : Expression expression',
-  'VariableDecl : Token name, Expression? value',
-  'Block        : List<Statement> statements',
-  'IfStatement  : Expression condition, Statement thenStatement, Statement? elseStatement',
-  'WhileLoop    : Expression condition, Statement body',
+  'Print          : Expression expression',
+  'Expr           : Expression expression',
+  'VariableDecl   : Token name, Expression? value',
+  'Block          : List<Statement> statements',
+  'IfStatement    : Expression condition, Statement thenStatement, Statement? elseStatement',
+  'WhileLoop      : Expression condition, Statement body',
+  'BreakStatement : ',
 ])
 class _Statement {}

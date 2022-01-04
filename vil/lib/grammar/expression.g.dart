@@ -18,6 +18,7 @@ abstract class ExpressionVisitor<T> {
 }
 
 abstract class Expression {
+  const Expression();
   T accept<T>(ExpressionVisitor<T> visitor);
 }
 
@@ -25,7 +26,7 @@ class Binary extends Expression {
   final Expression left;
   final Token operator;
   final Expression right;
-  Binary(
+  const Binary(
     this.left,
     this.operator,
     this.right,
@@ -37,7 +38,7 @@ class Binary extends Expression {
 
 class Grouping extends Expression {
   final Expression expression;
-  Grouping(
+  const Grouping(
     this.expression,
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
@@ -47,7 +48,7 @@ class Grouping extends Expression {
 
 class Literal extends Expression {
   final dynamic value;
-  Literal(
+  const Literal(
     this.value,
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
@@ -58,7 +59,7 @@ class Literal extends Expression {
 class Unary extends Expression {
   final Token operator;
   final Expression right;
-  Unary(
+  const Unary(
     this.operator,
     this.right,
   );
@@ -69,7 +70,7 @@ class Unary extends Expression {
 
 class Variable extends Expression {
   final Token name;
-  Variable(
+  const Variable(
     this.name,
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
@@ -81,7 +82,7 @@ class Ternary extends Expression {
   final Expression condition;
   final Expression thenExpression;
   final Expression elseExpression;
-  Ternary(
+  const Ternary(
     this.condition,
     this.thenExpression,
     this.elseExpression,
@@ -94,7 +95,7 @@ class Ternary extends Expression {
 class Assign extends Expression {
   final Token name;
   final Expression value;
-  Assign(
+  const Assign(
     this.name,
     this.value,
   );
@@ -107,7 +108,7 @@ class Logical extends Expression {
   final Expression left;
   final Token operator;
   final Expression right;
-  Logical(
+  const Logical(
     this.left,
     this.operator,
     this.right,

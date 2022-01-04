@@ -34,8 +34,9 @@ class Scanner {
     "hàm": TokenType.kHam,
     "rỗng": TokenType.kRong,
     "cha": TokenType.kCha,
-    "this": TokenType.kThis,
-    "return": TokenType.kReturn,
+    "self": TokenType.kSelf,
+    "trả": TokenType.kTra,
+    "thoát": TokenType.kThoat,
     "&&": TokenType.kAnd,
     "||": TokenType.kOr,
   };
