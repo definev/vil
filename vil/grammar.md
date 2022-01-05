@@ -29,7 +29,11 @@ expressionStatement => expression ";" ;
 printStatement      => "xuất" expression ";" ;
 block               => "{" declaration* "}" ;
 
-expression          => postfix ;
+expression          => assignment ;
+assignment          => ternary ( "=" assignment)+ ;
+ternary             => or ( "?" ternary ":" ternary )+ ;
+or                  => and ( "||" and)* ;
+and                 => postfix ( "&&" postfix )* ;
 postfix              => equality ( "++" | "--" )+ ;
 equality            => comparison ( ( "==" | "!=" ) comparison )* ;
 comparison          => term ( ( ">" | ">=" | "<" | "<=" ) term )* ;

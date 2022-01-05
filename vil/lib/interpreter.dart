@@ -59,7 +59,7 @@ class Interpreter
 
   // EXPRESSION VISITOR
   @override
-  visitPostfix(Postfix postfix) {
+  dynamic visitPostfix(Postfix postfix) {
     final left = _evaluate(postfix.left);
     switch (postfix.operator.type) {
       case TokenType.plusPlus:

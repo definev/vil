@@ -10,6 +10,8 @@ class Parser {
   final List<Token> _tokens;
   int _current = 0;
 
+  int _loopScope = 0;
+
   List<Statement>? parse() {
     try {
       List<Statement> statements = [];
@@ -18,7 +20,8 @@ class Parser {
       }
 
       return statements;
-    } on ParserError catch (_) {
+    } on ParserError catch (err) {
+      err.show();
       return null;
     }
   }
@@ -70,8 +73,10 @@ class Parser {
   }
 
   ParserError _error(Token token, String message) {
-    Vil.parserError(token, message);
-    return ParserError();
+    throw ParserError(
+      token: token,
+      message: message,
+    );
   }
 
   // DECLARATION SECTION
@@ -120,56 +125,70 @@ class Parser {
   }
 
   Statement _breakStatement() {
+    if (_loopScope == 0) {
+      throw _error(_previous(),
+          'Không được dùng câu lệnh "thoát" trong chương trình chính.');
+    }
     _consume(TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh "thoát".');
     return BreakStatement();
   }
 
   Statement _forStatement() {
-    _consume(TokenType.leftParen, 'Thiếu dấu "(" đằng sau từ khóa "lặp".');
-    Statement? initializer;
-    if (!_check(TokenType.semicolon)) {
-      if (_match([TokenType.kTao])) {
-        initializer = _variableDeclaration();
-      } else {
-        initializer = _expressionStatement();
+    try {
+      _loopScope++;
+      _consume(TokenType.leftParen, 'Thiếu dấu "(" đằng sau từ khóa "lặp".');
+      Statement? initializer;
+      if (!_check(TokenType.semicolon)) {
+        if (_match([TokenType.kTao])) {
+          initializer = _variableDeclaration();
+        } else {
+          initializer = _expressionStatement();
+        }
       }
-    }
-    Expression? condition;
-    if (!_check(TokenType.semicolon)) {
-      condition = _expression();
-    }
+      Expression? condition;
+      if (!_check(TokenType.semicolon)) {
+        condition = _expression();
+      }
 
-    _consume(TokenType.semicolon, 'Thiếu dấu ";" trong vòng lặp.');
-    Expression? increment;
-    if (!_check(TokenType.semicolon)) {
-      increment = _expression();
-    }
+      _consume(TokenType.semicolon, 'Thiếu dấu ";" trong vòng lặp.');
+      Expression? increment;
+      if (!_check(TokenType.semicolon)) {
+        increment = _expression();
+      }
 
-    _consume(TokenType.rightParen, 'Thiếu dấu ")" sau điều kiện lặp.');
-    Statement body = _statement();
+      _consume(TokenType.rightParen, 'Thiếu dấu ")" sau điều kiện lặp.');
+      Statement body = _statement();
 
-    if (increment != null) {
-      body = Block([body, Expr(increment)]);
-    }
-    if (condition == null) {
-      condition = Literal(true);
-    }
-    if (initializer != null) {
-      return Block([
-        initializer,
-        WhileLoop(condition, body),
-      ]);
-    }
+      if (increment != null) {
+        body = Block([body, Expr(increment)]);
+      }
+      if (condition == null) {
+        condition = Literal(true);
+      }
+      if (initializer != null) {
+        return Block([
+          initializer,
+          WhileLoop(condition, body),
+        ]);
+      }
 
-    return WhileLoop(condition, body);
+      return WhileLoop(condition, body);
+    } finally {
+      _loopScope--;
+    }
   }
 
   Statement _whileStatement() {
-    _consume(TokenType.leftParen, 'Thiếu dấu "(" sau từ khóa "lặp".');
-    final condition = _expression();
-    _consume(TokenType.rightParen, 'Thiếu dấu ")" sau điều kiện lặp.');
-    final body = _statement();
-    return WhileLoop(condition, body);
+    try {
+      _loopScope++;
+      _consume(TokenType.leftParen, 'Thiếu dấu "(" sau từ khóa "lặp".');
+      final condition = _expression();
+      _consume(TokenType.rightParen, 'Thiếu dấu ")" sau điều kiện lặp.');
+      final body = _statement();
+      return WhileLoop(condition, body);
+    } finally {
+      _loopScope--;
+    }
   }
 
   Statement _ifStatement() {
@@ -224,7 +243,7 @@ class Parser {
         return Assign(expression.name, value);
       }
 
-      _error(equals, 'Không thể gán giá trị nếu không đó không là biến.');
+      throw _error(equals, 'Không thể gán giá trị nếu không đó không là biến.');
     }
 
     return expression;
@@ -379,4 +398,14 @@ class Parser {
   }
 }
 
-class ParserError {}
+class ParserError {
+  final String message;
+  final Token token;
+
+  const ParserError({
+    required this.message,
+    required this.token,
+  });
+
+  void show() => Vil.parserError(token, message);
+}
