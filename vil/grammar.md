@@ -6,8 +6,10 @@ VL có cú pháp theo phong cách ngôn ngữ C.
 program             => declaration* EOF ;
 
 declaration         => variableDecl
+                    | funcDecl
                     | statement ;
 
+funcDecl            => "hàm" IDENTIFIER "(" IDENTIFIER* ")" "{" statement* "}" ;
 variableDecl        => "tạo" IDENTIFIER ("=" expression)? ";" ;
 
 statement           => expressionStatement
@@ -39,7 +41,8 @@ equality            => comparison ( ( "==" | "!=" ) comparison )* ;
 comparison          => term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term                => factor ( ( "+" | "-" ) factor )* ;
 factor              => unary ( ( "/" | "*" ) unary )* ;
+call                => primary ( "(" arguments? ")" )* ;
 unary               => ( "!" | "-" ) unary
                     | primary ;
-primary             => số | chuỗi | "đúng" | "sai" | "(" expression ")" | IDENTIFIER ;
+primary             => số | chuỗi | "đúng" | "sai" | "(" expression ")"                   | IDENTIFIER ;
 ```

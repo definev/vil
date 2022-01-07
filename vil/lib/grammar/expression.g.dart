@@ -16,6 +16,7 @@ abstract class ExpressionVisitor<T> {
   T visitTernary(Ternary ternary);
   T visitAssign(Assign assign);
   T visitLogical(Logical logical);
+  T visitCall(Call call);
 }
 
 abstract class Expression {
@@ -128,5 +129,19 @@ class Logical extends Expression {
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
     return visitor.visitLogical(this);
+  }
+}
+
+class Call extends Expression {
+  final Expression callee;
+  final Token paren;
+  final List<Expression> arguments;
+  const Call(
+    this.callee,
+    this.paren,
+    this.arguments,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitCall(this);
   }
 }

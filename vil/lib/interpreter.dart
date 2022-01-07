@@ -1,13 +1,22 @@
 import 'package:vil/environment.dart';
 import 'package:vil/grammar/expression.dart';
 import 'package:vil/grammar/statement.dart';
+import 'package:vil/native_functions/exit_function.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
 import 'package:vil/vil.dart';
+import 'package:vil/vil_callable.dart';
+import 'package:vil/vil_function.dart';
 
 class Interpreter
     implements ExpressionVisitor<dynamic>, StatementVisitor<void> {
-  Environment _environment = Environment();
+  Interpreter() {
+    _environment = Environment({}, parent: globals);
+  }
+
+  final Environment globals = Environment({'exit': ExitFunction()});
+  late Environment _environment;
+  Environment get environment => _environment;
 
   void interpret(List<Statement> statements) {
     try {
@@ -21,6 +30,18 @@ class Interpreter
 
   void _execute(Statement statement) {
     statement.accept(this);
+  }
+
+  void executeBlock(List<Statement> statements, Environment childScope) {
+    _environment = childScope.clone();
+
+    try {
+      for (final statement in statements) {
+        _execute(statement);
+      }
+    } finally {
+      _environment = childScope.parent!;
+    }
   }
 
   String _stringify(dynamic value) {
@@ -209,6 +230,33 @@ class Interpreter
     }
   }
 
+  @override
+  dynamic visitCall(Call call) {
+    Environment outerEnvironment = _environment;
+    var callee = _evaluate(call.callee);
+    if (callee is! VilCallable) {
+      throw RuntimeError(
+        message: 'Chỉ có thể thực thi trong hàm hoặc lớp.',
+        token: call.paren,
+      );
+    }
+
+    List<dynamic> arguments =
+        call.arguments.map((arg) => _evaluate(arg)).toList();
+
+    if (callee.argsSize != arguments.length) {
+      throw RuntimeError(
+        message:
+            'Truyền sai số lượng tham số. Cần ${callee.argsSize} tham số nhưng nhận được ${arguments.length} tham số.',
+        token: call.paren,
+      );
+    }
+
+    final value = callee.call(this, arguments);
+    _environment = outerEnvironment;
+    return value;
+  }
+
   // STATEMENT VISITOR
   @override
   void visitExpr(Expr exprStmt) {
@@ -231,15 +279,19 @@ class Interpreter
   }
 
   @override
+  void visitFuncDecl(FuncDecl funcDecl) {
+    _environment.define(
+      funcDecl.name.lexeme,
+      VilFunction(funcDecl, _environment),
+    );
+  }
+
+  @override
   void visitBlock(Block block) {
-    Environment blockEnv = Environment(_environment);
-    _environment = blockEnv;
-
-    for (final statement in block.statements) {
-      _execute(statement);
-    }
-
-    _environment = _environment.parent!;
+    executeBlock(
+      block.statements,
+      Environment({}, parent: _environment),
+    );
   }
 
   @override
@@ -257,16 +309,27 @@ class Interpreter
 
   @override
   void visitWhileLoop(WhileLoop whileLoop) {
-    try {
-      while (_isTruthy(_evaluate(whileLoop.condition))) {
+    while (_isTruthy(_evaluate(whileLoop.condition))) {
+      try {
         _execute(whileLoop.body);
+      } on BreakEvent catch (_) {
+        break;
       }
-    } on BreakEvent catch (_) {}
+    }
   }
 
   @override
   void visitBreakStatement(BreakStatement breakStatement) {
     throw BreakEvent();
+  }
+
+  @override
+  void visitReturnStatement(ReturnStatement returnStatement) {
+    dynamic value;
+    if (returnStatement.value != null) {
+      value = _evaluate(returnStatement.value!);
+    }
+    throw ReturnEvent(value);
   }
 }
 
@@ -284,3 +347,9 @@ class RuntimeError {
 }
 
 class BreakEvent {}
+
+class ReturnEvent {
+  final dynamic value;
+
+  ReturnEvent(this.value);
+}

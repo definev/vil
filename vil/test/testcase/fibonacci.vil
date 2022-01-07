@@ -1,0 +1,8 @@
+hàm fib(n) {
+  nếu (n <= 1) trả 1;
+  trả fib(n - 2) + fib(n - 1);
+}
+
+lặp (tạo i = 0; i < 8; i++) {
+  xuất fib(i);
+}

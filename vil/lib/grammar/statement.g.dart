@@ -10,10 +10,12 @@ abstract class StatementVisitor<T> {
   T visitPrint(Print print);
   T visitExpr(Expr expr);
   T visitVariableDecl(VariableDecl variableDecl);
+  T visitFuncDecl(FuncDecl funcDecl);
   T visitBlock(Block block);
   T visitIfStatement(IfStatement ifStatement);
   T visitWhileLoop(WhileLoop whileLoop);
   T visitBreakStatement(BreakStatement breakStatement);
+  T visitReturnStatement(ReturnStatement returnStatement);
 }
 
 abstract class Statement {
@@ -50,6 +52,20 @@ class VariableDecl extends Statement {
   );
   T accept<T>(StatementVisitor<T> visitor) {
     return visitor.visitVariableDecl(this);
+  }
+}
+
+class FuncDecl extends Statement {
+  final Token name;
+  final List<Token> params;
+  final List<Statement> body;
+  const FuncDecl(
+    this.name,
+    this.params,
+    this.body,
+  );
+  T accept<T>(StatementVisitor<T> visitor) {
+    return visitor.visitFuncDecl(this);
   }
 }
 
@@ -93,5 +109,17 @@ class BreakStatement extends Statement {
   const BreakStatement();
   T accept<T>(StatementVisitor<T> visitor) {
     return visitor.visitBreakStatement(this);
+  }
+}
+
+class ReturnStatement extends Statement {
+  final Token keyword;
+  final Expression? value;
+  const ReturnStatement(
+    this.keyword,
+    this.value,
+  );
+  T accept<T>(StatementVisitor<T> visitor) {
+    return visitor.visitReturnStatement(this);
   }
 }

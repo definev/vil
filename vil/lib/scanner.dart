@@ -189,7 +189,17 @@ class Scanner {
         _addToken(TokenType.semicolon);
         break;
       case '/':
-        _addToken(TokenType.slash);
+        if (_peek() == '/') {
+          while (_peek() != '\n' && !_isAtEnd) {
+            _autoIncrementPeek();
+          }
+        } else if (_match('*')) {
+          while ((!_isAtEnd) && (_peek() != '*' && _peekNext() != '/')) {
+            _autoIncrementPeek();
+          }
+        } else {
+          _addToken(TokenType.slash);
+        }
         break;
       case '*':
         _addToken(TokenType.star);

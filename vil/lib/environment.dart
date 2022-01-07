@@ -2,10 +2,16 @@ import 'package:vil/interpreter.dart';
 import 'package:vil/token.dart';
 
 class Environment {
-  Environment([this.parent = null]);
+  Environment(Map<String, dynamic> values, {Environment? parent})
+      : _values = values,
+        this.parent = parent;
 
   final Environment? parent;
   Map<String, dynamic> _values = {};
+
+  Environment clone() {
+    return Environment({..._values}, parent: parent);
+  }
 
   void define(String name, dynamic value) {
     _values[name] = value;

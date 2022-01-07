@@ -13,6 +13,7 @@ part 'expression.g.dart';
   "Ternary  : Expression condition, Expression thenExpression, Expression elseExpression",
   "Assign   : Token name, Expression value",
   "Logical  : Expression left, Token operator, Expression right",
+  "Call     : Expression callee, Token paren, List<Expression> arguments",
 ])
 // ignore: unused_element
 class _Expression {}

@@ -84,5 +84,6 @@ class Vil {
 }
 
 void main() {
-  Vil.runPrompt();
+  Vil.runFile(
+      '/Users/daiduong/Desktop/Project/Github Project/vil/vil/test/testcase/fibonacci.vil');
 }

@@ -1,0 +1,13 @@
+hàm makeCounter() {
+  tạo i = 0;
+  hàm count() {
+    i = i + 1;
+    xuất i;
+  }
+
+  trả count;
+}
+
+tạo counter = makeCounter();
+counter(); // "1".
+counter(); // "1".

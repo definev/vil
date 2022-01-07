@@ -84,6 +84,9 @@ class Parser {
     if (_match([TokenType.kTao])) {
       return _variableDeclaration();
     }
+    if (_match([TokenType.kHam])) {
+      return _function('hàm');
+    }
 
     return _statement();
   }
@@ -98,6 +101,30 @@ class Parser {
 
     _consume(TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh.');
     return VariableDecl(token, initializer);
+  }
+
+  Statement _function(String functionType) {
+    final name = _consume(TokenType.identifier, 'Cần tên $functionType.');
+    List<Token> params = [];
+    List<Statement> body = [];
+
+    _consume(TokenType.leftParen, 'Thiếu dấu "(" sau tên $functionType.');
+
+    if (!_check(TokenType.rightParen)) {
+      do {
+        if (params.length >= 255) {
+          _error(_peek(), 'Không thể chứa nhiều hơn 255 tham số.');
+        }
+        params.add(_consume(TokenType.identifier, 'Tham số cần là tên biến.'));
+      } while (_match([TokenType.comma]));
+    }
+    _consume(TokenType.rightParen, 'Thiếu dấu ")" sau tên $functionType.');
+
+    _consume(TokenType.leftBrace, 'Thiếu dấu "{" trước khối lệnh.');
+    body = _block();
+    _consume(TokenType.rightBrace, 'Thiếu dấu "}" sau khối lệnh.');
+
+    return FuncDecl(name, params, body);
   }
 
   // STATEMENT SECTION
@@ -120,8 +147,23 @@ class Parser {
     if (_match([TokenType.kThoat])) {
       return _breakStatement();
     }
+    if (_match([TokenType.kTra])) {
+      return _returnStatement();
+    }
 
     return _expressionStatement();
+  }
+
+  Statement _returnStatement() {
+    Token keyword = _previous();
+    Expression? expression;
+    if (!_match([TokenType.semicolon])) {
+      expression = _expression();
+    }
+
+    _consume(TokenType.semicolon, 'Thiếu dấu ";".');
+
+    return ReturnStatement(keyword, expression);
   }
 
   Statement _breakStatement() {
@@ -202,11 +244,7 @@ class Parser {
   }
 
   Statement _blockStatement() {
-    final statements = <Statement>[];
-
-    while (!_check(TokenType.rightBrace) && !_isAtEnd) {
-      statements.add(_declaration());
-    }
+    final statements = _block();
     _consume(TokenType.rightBrace, 'Thiếu dấu "}" sau khối lệnh.');
 
     return Block(statements);
@@ -225,6 +263,15 @@ class Parser {
     _consume(TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh.');
 
     return Expr(expression);
+  }
+
+  List<Statement> _block() {
+    final statements = <Statement>[];
+
+    while (!_check(TokenType.rightBrace) && !_isAtEnd) {
+      statements.add(_declaration());
+    }
+    return statements;
   }
 
   // EXPRESSION SECTION
@@ -369,7 +416,21 @@ class Parser {
       return Unary(operator, right);
     }
 
-    return _primary();
+    return _call();
+  }
+
+  Expression _call() {
+    var expression = _primary();
+
+    while (true) {
+      if (_match([TokenType.leftParen])) {
+        expression = _finishCall(expression);
+      } else {
+        break;
+      }
+    }
+
+    return expression;
   }
 
   Expression _primary() {
@@ -395,6 +456,22 @@ class Parser {
     }
 
     throw _error(_peek(), 'Token chưa có trong bảng quy tắc.');
+  }
+
+  Expression _finishCall(Expression callee) {
+    List<Expression> arguments = [];
+    if (!_check(TokenType.rightParen)) {
+      do {
+        if (arguments.length >= 255) {
+          throw _error(_previous(), 'Không thể chứa nhiều hơn 255 tham số.');
+        }
+        arguments.add(_expression());
+      } while (_match([TokenType.comma]));
+    }
+
+    final paren = _consume(TokenType.rightParen, 'Thiếu ")" sau tham số.');
+
+    return Call(callee, paren, arguments);
   }
 }
 
