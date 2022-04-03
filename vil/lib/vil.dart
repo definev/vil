@@ -91,5 +91,9 @@ class Vil {
 }
 
 void main() {
-  Vil.runPrompt();
+  Vil.run('''
+tạo a = 3;
+tạo b = 4;
+in b;
+''');
 }

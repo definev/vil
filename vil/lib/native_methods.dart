@@ -11,6 +11,6 @@ class Console extends NativeMethods {
   }
 
   void error(dynamic value) {
-    print(error);
+    print(value);
   }
 }

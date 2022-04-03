@@ -1,6 +1,5 @@
 import 'package:vil/grammar/expression.dart';
 import 'package:vil/grammar/statement.dart';
-import 'package:vil/interpreter.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
 import 'package:vil/vil.dart';

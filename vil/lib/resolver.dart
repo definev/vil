@@ -9,11 +9,24 @@ enum FunctionType {
   function,
 }
 
+enum _VariableState {
+  declare,
+  define,
+  read,
+}
+
+class _VariableResolver {
+  final Token name;
+  final _VariableState state;
+
+  _VariableResolver(this.name, this.state);
+}
+
 class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
   Resolver(this._interpreter);
 
   final Interpreter _interpreter;
-  final List<Map<String, bool>> _scopes = [];
+  final List<Map<String, _VariableResolver>> _scopes = [];
   FunctionType _currentFunction = FunctionType.none;
 
   void resolve(List<Statement> statements) {
@@ -25,7 +38,7 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
   @override
   void visitAssign(Assign assign) {
     _resolveExpression(assign.value);
-    _resolveLocal(assign, assign.name);
+    _resolveLocal(assign, assign.name, false);
   }
 
   @override
@@ -60,7 +73,16 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
   }
 
   void _endScope() {
-    _scopes.removeLast();
+    final scope = _scopes.removeLast();
+    for (final variable in scope.values) {
+      if (variable.state == _VariableState.define) {
+        Vil.error(
+          errorIn: 'RESOLVER',
+          loc: variable.name.loc,
+          message: 'Biến "${variable.name.lexeme}" không được sử dụng',
+        );
+      }
+    }
   }
 
   @override
@@ -169,13 +191,17 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
         errorAt: '"${variable.name.lexeme}"',
       );
     }
-    _resolveLocal(variable, variable.name);
+    _resolveLocal(variable, variable.name, true);
   }
 
-  void _resolveLocal(Expression expression, Token name) {
+  void _resolveLocal(Expression expression, Token name, bool isRead) {
     for (int i = _scopes.length - 1; i >= 0; i--) {
       if (_scopes[i].containsKey(name.lexeme)) {
         _interpreter.resolve(expression, _scopes.length - 1 - i);
+        if (isRead) {
+          _scopes[i][name.lexeme] =
+              _VariableResolver(name, _VariableState.read);
+        }
         return;
       }
     }
@@ -183,6 +209,7 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
       errorIn: 'RESOLVER',
       loc: name.loc,
       message: 'Biến "${name.lexeme}" chưa được khởi tạo',
+      errorAt: '"${name.lexeme}"',
     );
   }
 
@@ -208,12 +235,14 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
       return;
     }
 
-    _scopes.last[token.lexeme] = false;
+    _scopes.last[token.lexeme] =
+        _VariableResolver(token, _VariableState.declare);
   }
 
   void _define(Token token) {
     if (_scopes.isEmpty) return;
-    _scopes.last[token.lexeme] = true;
+    _scopes.last[token.lexeme] =
+        _VariableResolver(token, _VariableState.define);
   }
 
   @override
