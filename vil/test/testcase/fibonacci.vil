@@ -4,5 +4,5 @@ hàm fib(n) {
 }
 
 lặp (tạo i = 0; i < 8; i++) {
-  xuất fib(i);
+  in fib(i);
 }

@@ -3,7 +3,7 @@ tạo chuỗi = "hello";
 tạo trạng_thái = đúng;
 tạo phản_trạng_thái = !đúng;
 
-xuất số;
-xuất chuỗi;
-xuất trạng_thái;
-xuất phản_trạng_thái;
+in số;
+in chuỗi;
+in trạng_thái;
+in phản_trạng_thái;

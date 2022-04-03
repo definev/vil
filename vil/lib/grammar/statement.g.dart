@@ -45,10 +45,10 @@ class Expr extends Statement {
 
 class VariableDecl extends Statement {
   final Token name;
-  final Expression? value;
+  final Expression? initializer;
   const VariableDecl(
     this.name,
-    this.value,
+    this.initializer,
   );
   T accept<T>(StatementVisitor<T> visitor) {
     return visitor.visitVariableDecl(this);

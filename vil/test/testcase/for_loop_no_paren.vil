@@ -1,0 +1,9 @@
+tạo i = 0;
+lặp ;đúng; {
+    nếu i < 5 {
+        in i;
+        i++;
+    } hoặc {
+        thoát;
+    }
+}

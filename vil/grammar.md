@@ -28,7 +28,7 @@ forStatement        => "lặp" "(" ( variableDecl | expressionStatement | ";" )
 whileStatement      => "khi" "(" condition ")" statement ;
 
 expressionStatement => expression ";" ;
-printStatement      => "xuất" expression ";" ;
+printStatement      => "in" expression ";" ;
 block               => "{" declaration* "}" ;
 
 expression          => assignment ;

@@ -27,5 +27,5 @@ class VilFunction implements VilCallable {
   }
 
   @override
-  String toString() => '<fn "${declaration.name.lexeme}">';
+  String toString() => '<hàm "${declaration.name.lexeme}">';
 }

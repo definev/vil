@@ -1,5 +1,5 @@
 hàm chào(tên) {
-    xuất "Chào " + tên + "!";
+    in "Chào " + tên + "!";
 }
 
 chào("Definev");

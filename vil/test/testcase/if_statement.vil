@@ -1,7 +1,7 @@
 tạo kiểm_tra = đúng;
 
 nếu kiểm_tra {
-    xuất "Đã kiểm tra";
+    in "Đã kiểm tra";
 } hoặc {
-    xuất "Chưa kiểm tra";
+    in "Chưa kiểm tra";
 }

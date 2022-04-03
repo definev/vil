@@ -94,12 +94,12 @@ class Variable extends Expression {
 
 class Ternary extends Expression {
   final Expression condition;
-  final Expression thenExpression;
-  final Expression elseExpression;
+  final Expression thenBranch;
+  final Expression elseBranch;
   const Ternary(
     this.condition,
-    this.thenExpression,
-    this.elseExpression,
+    this.thenBranch,
+    this.elseBranch,
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
     return visitor.visitTernary(this);

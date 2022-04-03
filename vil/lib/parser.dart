@@ -1,5 +1,6 @@
 import 'package:vil/grammar/expression.dart';
 import 'package:vil/grammar/statement.dart';
+import 'package:vil/interpreter.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
 import 'package:vil/vil.dart';
@@ -129,7 +130,7 @@ class Parser {
 
   // STATEMENT SECTION
   Statement _statement() {
-    if (_match([TokenType.kXuat])) {
+    if (_match([TokenType.kIn])) {
       return _printStatement();
     }
     if (_match([TokenType.leftBrace])) {
@@ -178,9 +179,9 @@ class Parser {
   Statement _forStatement() {
     try {
       _loopScope++;
-      _consume(TokenType.leftParen, 'Thiếu dấu "(" đằng sau từ khóa "lặp".');
       Statement? initializer;
-      if (!_check(TokenType.semicolon)) {
+      bool hasParen = _match([TokenType.leftParen]);
+      if (!_match([TokenType.semicolon])) {
         if (_match([TokenType.kTao])) {
           initializer = _variableDeclaration();
         } else {
@@ -194,11 +195,20 @@ class Parser {
 
       _consume(TokenType.semicolon, 'Thiếu dấu ";" trong vòng lặp.');
       Expression? increment;
-      if (!_check(TokenType.semicolon)) {
+      if (!_check(TokenType.semicolon) &&
+          !_check(TokenType.rightParen) &&
+          !_check(TokenType.leftBrace)) {
         increment = _expression();
       }
 
-      _consume(TokenType.rightParen, 'Thiếu dấu ")" sau điều kiện lặp.');
+      if (hasParen) {
+        _consume(TokenType.rightParen, 'Thiếu dấu ")" sau vòng lặp.');
+      } else {
+        if (_check(TokenType.rightParen)) {
+          throw _error(_peek(), 'Thiếu dấu "(" trước vòng lặp.');
+        }
+      }
+
       Statement body = _statement();
 
       if (increment != null) {
@@ -252,8 +262,7 @@ class Parser {
 
   Statement _printStatement() {
     final expression = _expression();
-    _consume(
-        TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh xuất ra màn hình.');
+    _consume(TokenType.semicolon, 'Thiếu dấu ";" sau câu lệnh in ra màn hình.');
 
     return Print(expression);
   }

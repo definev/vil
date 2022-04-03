@@ -1,6 +1,7 @@
 import 'package:vil/environment.dart';
 import 'package:vil/grammar/expression.dart';
 import 'package:vil/grammar/statement.dart';
+import 'package:vil/native_functions/clock_function.dart';
 import 'package:vil/native_functions/exit_function.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
@@ -14,9 +15,13 @@ class Interpreter
     _environment = Environment({}, parent: globals);
   }
 
-  final Environment globals = Environment({'exit': ExitFunction()});
+  final Environment globals = Environment({
+    'exit': ExitFunction(),
+    'clock': ClockFunction(),
+  });
   late Environment _environment;
   Environment get environment => _environment;
+  Map<Expression, int> _locals = {};
 
   void interpret(List<Statement> statements) {
     try {
@@ -26,6 +31,10 @@ class Interpreter
     } on RuntimeError catch (error) {
       Vil.runtimeError(error);
     }
+  }
+
+  void resolve(Expression expression, int depth) {
+    _locals[expression] = depth;
   }
 
   void _execute(Statement statement) {
@@ -75,6 +84,15 @@ class Interpreter
         throw RuntimeError(
             token: token, message: 'Sai kiểu dữ liệu, cần kiểu số.');
       }
+    }
+  }
+
+  dynamic _lookUpVariable(Token name, Expression expression) {
+    int? depth = _locals[expression];
+    if (depth == null) {
+      return globals.get(name);
+    } else {
+      return _environment.getAt(name, depth);
     }
   }
 
@@ -191,13 +209,18 @@ class Interpreter
 
   @override
   dynamic visitVariable(Variable variable) {
-    return _environment.get(variable.name);
+    return _lookUpVariable(variable.name, variable);
   }
 
   @override
   dynamic visitAssign(Assign assign) {
     final value = _evaluate(assign.value);
-    _environment.assign(assign.name, value);
+    final depth = _locals[assign];
+    if (depth == null) {
+      globals.assign(assign.name, value);
+    } else {
+      _environment.assignAt(assign.name, depth, value);
+    }
     return value;
   }
 
@@ -206,9 +229,9 @@ class Interpreter
     final condition = _evaluate(ternary.condition);
 
     if (_isTruthy(condition)) {
-      return _evaluate(ternary.thenExpression);
+      return _evaluate(ternary.thenBranch);
     } else {
-      return _evaluate(ternary.elseExpression);
+      return _evaluate(ternary.elseBranch);
     }
   }
 
@@ -272,8 +295,8 @@ class Interpreter
   @override
   void visitVariableDecl(VariableDecl variableDeclStmt) {
     dynamic value = null;
-    if (variableDeclStmt.value != null) {
-      value = _evaluate(variableDeclStmt.value!);
+    if (variableDeclStmt.initializer != null) {
+      value = _evaluate(variableDeclStmt.initializer!);
     }
     _environment.define(variableDeclStmt.name.lexeme, value);
   }

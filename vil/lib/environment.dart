@@ -1,5 +1,6 @@
 import 'package:vil/interpreter.dart';
 import 'package:vil/token.dart';
+import 'package:vil/vil.dart';
 
 class Environment {
   Environment(Map<String, dynamic> values, {Environment? parent})
@@ -26,7 +27,7 @@ class Environment {
 
     throw RuntimeError(
       token: name,
-      message: 'Biến "${name.lexeme}" chưa được định nghĩa.',
+      message: 'Biến "${name.lexeme}" chưa được định nghĩa',
     );
   }
 
@@ -43,7 +44,33 @@ class Environment {
 
     throw RuntimeError(
       token: name,
-      message: 'Biến "${name.lexeme}" chưa được định nghĩa.',
+      message: 'Biến "${name.lexeme}" chưa được định nghĩa',
     );
+  }
+
+  dynamic getAt(Token name, int depth) {
+    return ancestor(name, depth)?._values[name.lexeme];
+  }
+
+  dynamic assignAt(Token name, int depth, dynamic value) {
+    ancestor(name, depth)?._values[name.lexeme] = value;
+  }
+
+  Environment? ancestor(Token name, int depth) {
+    Environment environment = this;
+    for (int i = 0; i < depth; i++) {
+      final parent = environment.parent;
+      if (parent == null) {
+        Vil.error(
+          errorIn: 'RESOLVER',
+          loc: name.loc,
+          message: 'Không tồn tại biến tại cấp độ $depth.',
+          errorAt: '"${name.lexeme}"',
+        );
+        return null;
+      }
+      environment = parent;
+    }
+    return environment;
   }
 }

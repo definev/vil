@@ -9,7 +9,7 @@ part 'statement.g.dart';
 @Ast([
   'Print           : Expression expression',
   'Expr            : Expression expression',
-  'VariableDecl    : Token name, Expression? value',
+  'VariableDecl    : Token name, Expression? initializer',
   'FuncDecl        : Token name, List<Token> params, List<Statement> body',
   'Block           : List<Statement> statements',
   'IfStatement     : Expression condition, Statement thenStatement, Statement? elseStatement',

@@ -4,9 +4,11 @@ import 'package:vil/interpreter.dart';
 import 'package:vil/loc.dart';
 import 'package:vil/native_methods.dart';
 import 'package:vil/parser.dart';
+import 'package:vil/resolver.dart';
 import 'package:vil/scanner.dart';
 import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
+import 'package:vil/vil_error.dart';
 
 class Vil {
   static Interpreter interpreter = Interpreter();
@@ -21,17 +23,20 @@ class Vil {
 
     Parser parser = Parser(tokens);
     final statements = parser.parse();
-    if (statements != null) {
-      interpreter.interpret(statements);
-    }
+    if (statements == null) return;
+
+    Resolver resolver = Resolver(interpreter);
+    resolver.resolve(statements);
+    if (hadError) return;
+    interpreter.interpret(statements);
   }
 
   static void runFile(String fileSource) {
     File file = File(fileSource);
     String source = file.readAsStringSync();
     run(source);
-    if (hadError) exit(65);
-    if (hadRuntimeError) exit(70);
+    if (hadError) throw VilCompileError();
+    if (hadRuntimeError) throw VilRuntimeError();
   }
 
   static void runPrompt() {
@@ -51,7 +56,8 @@ class Vil {
     required String message,
     String? errorAt,
   }) {
-    print('|$errorIn| [$loc]: Lỗi $errorAt: $message');
+    native.error(
+        '|$errorIn| [$loc]:${errorAt != null ? " Lỗi $errorAt: " : " "}$message');
     hadError = true;
   }
 
@@ -68,7 +74,7 @@ class Vil {
         errorIn: 'PARSER',
         loc: token.loc,
         message: message,
-        errorAt: ' tại "${token.lexeme}"',
+        errorAt: 'tại "${token.lexeme}"',
       );
     }
   }
@@ -78,12 +84,12 @@ class Vil {
       errorIn: 'INTERPRETER',
       loc: error.token.loc,
       message: error.message,
+      errorAt: 'tại "${error.token.lexeme}"',
     );
     hadRuntimeError = true;
   }
 }
 
 void main() {
-  Vil.runFile(
-      '/Users/daiduong/Desktop/Project/Github Project/vil/vil/test/testcase/fibonacci.vil');
+  Vil.runPrompt();
 }

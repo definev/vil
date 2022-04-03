@@ -7,5 +7,5 @@ ViL cho phép sử dụng kí tự UTF-8 giúp định nghĩa các từ khóa c�
 Chương trình `hello world` trong ViL.
 ```js
 // Hello world
-xuất "Hello world!";
+in "Hello world!";
 ```

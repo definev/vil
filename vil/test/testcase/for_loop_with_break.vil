@@ -1,5 +1,5 @@
 lặp (tạo i = 0; i < 10; i++) {
-    xuất i;
+    in i;
     nếu i >= 4 {
         thoát;
     }

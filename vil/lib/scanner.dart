@@ -25,7 +25,7 @@ class Scanner {
     "khi": TokenType.kKhi,
     "lặp": TokenType.kLap,
     "tạo": TokenType.kTao,
-    "xuất": TokenType.kXuat,
+    "in": TokenType.kIn,
     "đúng": TokenType.kDung,
     "sai": TokenType.kSai,
     "nếu": TokenType.kNeu,

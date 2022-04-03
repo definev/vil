@@ -1,0 +1,3 @@
+class VilCompileError {}
+
+class VilRuntimeError {}

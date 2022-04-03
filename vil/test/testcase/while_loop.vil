@@ -1,5 +1,5 @@
 tạo i = 0;
 khi (i < 5) {
-    xuất i;
+    in i;
     i = i + 1;
 }

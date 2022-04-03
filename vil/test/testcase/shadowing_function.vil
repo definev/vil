@@ -2,7 +2,7 @@ hàm makeCounter() {
   tạo i = 0;
   hàm count() {
     i = i + 1;
-    xuất i;
+    in i;
   }
 
   trả count;

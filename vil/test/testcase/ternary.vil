@@ -1,2 +1,2 @@
 tạo dk = đúng;
-xuất dk ? !dk ? dk ? 3 : 2 : 1 : 0;
+in dk ? !dk ? dk ? 3 : 2 : 1 : 0;

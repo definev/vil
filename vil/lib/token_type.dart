@@ -26,7 +26,7 @@ enum TokenType {
   /* while - khi */        kKhi,
   /* for - lặp */          kLap,
   /* var - tạo */          kTao,
-  /* print - xuất */       kXuat,
+  /* print - in */         kIn,
   /* true - đúng */        kDung,
   /* false - sai */        kSai,
   /* if - nếu */           kNeu,

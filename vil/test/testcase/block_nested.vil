@@ -7,9 +7,9 @@
       tạo c = " Scope: 2 ";
       {
           tạo a = " Scope: 3 ";
-          xuất a + b + c;
+          in a + b + c;
       }
-      xuất a + b + c;
+      in a + b + c;
   }
-  xuất a + b + c;
+  in a + b + c;
 }

@@ -5,7 +5,7 @@ class Loc {
   const Loc(this.x, this.y);
 
   @override
-  String toString() => '[$x, $y]';
+  String toString() => '$y, $x';
 
   Loc get down => Loc(1, y + 1);
 
