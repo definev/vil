@@ -14,6 +14,9 @@ part 'expression.g.dart';
   "Assign   : Token name, Expression value",
   "Logical  : Expression left, Token operator, Expression right",
   "Call     : Expression callee, Token paren, List<Expression> arguments",
+  "Get      : Expression object, Token name",
+  "Set      : Expression object, Token name, Expression value",
+  "Self     : Token keyword",
 ])
 // ignore: unused_element
 class _Expression {}

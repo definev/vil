@@ -1,12 +1,20 @@
 import 'package:vil/grammar/expression.dart';
 import 'package:vil/grammar/statement.dart';
 import 'package:vil/interpreter.dart';
+import 'package:vil/loc.dart';
 import 'package:vil/token.dart';
+import 'package:vil/token_type.dart';
 import 'package:vil/vil.dart';
 
 enum FunctionType {
   none,
   function,
+  method,
+}
+
+enum ClassType {
+  none,
+  klass,
 }
 
 enum _VariableState {
@@ -15,19 +23,56 @@ enum _VariableState {
   read,
 }
 
+enum _VariableKind {
+  variable,
+  function,
+  method,
+  native,
+  klass,
+}
+
 class _VariableResolver {
   final Token name;
   final _VariableState state;
+  final _VariableKind kind;
 
-  _VariableResolver(this.name, this.state);
+  _VariableResolver(
+    this.name,
+    this.state,
+    this.kind,
+  );
 }
 
 class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
   Resolver(this._interpreter);
 
   final Interpreter _interpreter;
-  final List<Map<String, _VariableResolver>> _scopes = [];
+  late final List<Map<String, _VariableResolver>> _scopes = [
+    <String, _VariableResolver>{
+      'clock': _VariableResolver(
+        Token(
+          lexeme: 'clock',
+          type: TokenType.identifier,
+          loc: Loc(0, 0),
+          literal: null,
+        ),
+        _VariableState.read,
+        _VariableKind.native,
+      ),
+      'exit': _VariableResolver(
+        Token(
+          lexeme: 'exit',
+          type: TokenType.identifier,
+          loc: Loc(0, 0),
+          literal: null,
+        ),
+        _VariableState.read,
+        _VariableKind.native,
+      ),
+    },
+  ];
   FunctionType _currentFunction = FunctionType.none;
+  ClassType _classType = ClassType.none;
 
   void resolve(List<Statement> statements) {
     _beginScope();
@@ -38,7 +83,7 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
   @override
   void visitAssign(Assign assign) {
     _resolveExpression(assign.value);
-    _resolveLocal(assign, assign.name, false);
+    _resolveLocal(assign, assign.name, false, kind: _VariableKind.variable);
   }
 
   @override
@@ -76,10 +121,25 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
     final scope = _scopes.removeLast();
     for (final variable in scope.values) {
       if (variable.state == _VariableState.define) {
+        final _variableKind = () {
+          switch (variable.kind) {
+            case _VariableKind.function:
+              return 'Hàm';
+            case _VariableKind.klass:
+              return 'Lớp';
+            case _VariableKind.method:
+              return 'Phương thức';
+            case _VariableKind.variable:
+              return 'Biến';
+            case _VariableKind.native:
+              return 'Hàm nội bộ';
+          }
+        }();
         Vil.error(
           errorIn: 'RESOLVER',
           loc: variable.name.loc,
-          message: 'Biến "${variable.name.lexeme}" không được sử dụng',
+          message:
+              '$_variableKind "${variable.name.lexeme}" không được sử dụng',
         );
       }
     }
@@ -103,22 +163,59 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
 
   @override
   void visitFuncDecl(FuncDecl funcDecl) {
-    _declare(funcDecl.name);
-    _define(funcDecl.name);
-    _resolveFunction(funcDecl, FunctionType.function);
+    _declare(funcDecl.name, kind: _VariableKind.function);
+    _define(funcDecl.name, kind: _VariableKind.function);
+    _resolveFunction(
+      funcDecl,
+      FunctionType.function,
+      ClassType.none,
+      kind: _VariableKind.function,
+    );
   }
 
-  void _resolveFunction(FuncDecl funcDecl, FunctionType type) {
+  @override
+  void visitClassDecl(ClassDecl classDecl) {
+    _declare(classDecl.name, kind: _VariableKind.klass);
+    _define(classDecl.name, kind: _VariableKind.klass);
+
+    _beginScope();
+    _classType = ClassType.klass;
+    _scopes.last['self'] = _VariableResolver(
+      classDecl.name,
+      _VariableState.read,
+      _VariableKind.method,
+    );
+    for (final method in classDecl.methods) {
+      _resolveFunction(
+        method,
+        FunctionType.function,
+        ClassType.klass,
+        kind: _VariableKind.method,
+      );
+    }
+    _endScope();
+    _classType = ClassType.none;
+  }
+
+  void _resolveFunction(
+    FuncDecl funcDecl,
+    FunctionType type,
+    ClassType classType, {
+    required _VariableKind kind,
+  }) {
     var enclosingFunction = _currentFunction;
+    var enclosingClass = _classType;
     _currentFunction = type;
+    _classType = classType;
     _beginScope();
     for (var param in funcDecl.params) {
-      _declare(param);
-      _define(param);
+      _declare(param, kind: kind);
+      _define(param, kind: kind);
     }
     _resolveStatements(funcDecl.body);
     _endScope();
     _currentFunction = enclosingFunction;
+    _classType = enclosingClass;
   }
 
   @override
@@ -191,16 +288,21 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
         errorAt: '"${variable.name.lexeme}"',
       );
     }
-    _resolveLocal(variable, variable.name, true);
+    _resolveLocal(variable, variable.name, true, kind: _VariableKind.variable);
   }
 
-  void _resolveLocal(Expression expression, Token name, bool isRead) {
+  void _resolveLocal(
+    Expression expression,
+    Token name,
+    bool isRead, {
+    required _VariableKind kind,
+  }) {
     for (int i = _scopes.length - 1; i >= 0; i--) {
       if (_scopes[i].containsKey(name.lexeme)) {
         _interpreter.resolve(expression, _scopes.length - 1 - i);
         if (isRead) {
           _scopes[i][name.lexeme] =
-              _VariableResolver(name, _VariableState.read);
+              _VariableResolver(name, _VariableState.read, kind);
         }
         return;
       }
@@ -215,14 +317,14 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
 
   @override
   void visitVariableDecl(VariableDecl variableDecl) {
-    _declare(variableDecl.name);
+    _declare(variableDecl.name, kind: _VariableKind.variable);
     if (variableDecl.initializer != null) {
       _resolveExpression(variableDecl.initializer!);
     }
-    _define(variableDecl.name);
+    _define(variableDecl.name, kind: _VariableKind.variable);
   }
 
-  void _declare(Token token) {
+  void _declare(Token token, {required _VariableKind kind}) {
     if (_scopes.isEmpty) return;
 
     if (_scopes.last.containsKey(token.lexeme)) {
@@ -236,18 +338,42 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
     }
 
     _scopes.last[token.lexeme] =
-        _VariableResolver(token, _VariableState.declare);
+        _VariableResolver(token, _VariableState.declare, kind);
   }
 
-  void _define(Token token) {
+  void _define(Token token, {required _VariableKind kind}) {
     if (_scopes.isEmpty) return;
     _scopes.last[token.lexeme] =
-        _VariableResolver(token, _VariableState.define);
+        _VariableResolver(token, _VariableState.define, kind);
   }
 
   @override
   void visitWhileLoop(WhileLoop whileLoop) {
     _resolveExpression(whileLoop.condition);
     _resolveStatement(whileLoop.body);
+  }
+
+  @override
+  void visitGet(Get get) {
+    _resolveExpression(get.object);
+  }
+
+  @override
+  void visitSet(Set set) {
+    _resolveExpression(set.object);
+    _resolveExpression(set.value);
+  }
+
+  @override
+  void visitSelf(Self self) {
+    if (_classType == ClassType.none) {
+      Vil.error(
+        errorIn: 'RESOLVER',
+        loc: self.keyword.loc,
+        message: 'Không thể truy cập đối tượng self ngoài lớp',
+        errorAt: '"self"',
+      );
+    }
+    _resolveLocal(self, self.keyword, true, kind: _VariableKind.method);
   }
 }

@@ -87,8 +87,23 @@ class Parser {
     if (_match([TokenType.kHam])) {
       return _function('hàm');
     }
+    if (_match([TokenType.kLop])) {
+      return _classDeclaration();
+    }
 
     return _statement();
+  }
+
+  Statement _classDeclaration() {
+    Token name = _consume(TokenType.identifier, 'Tên lớp không hợp lệ');
+    _consume(TokenType.leftBrace, 'Cần "{" sau tên lớp');
+    List<FuncDecl> methods = [];
+    while (!_check(TokenType.rightBrace) && !_isAtEnd) {
+      final method = _function('phương thức');
+      methods.add(method);
+    }
+    _consume(TokenType.rightBrace, 'Cần "}" sau các phương thức');
+    return ClassDecl(name, methods);
   }
 
   Statement _variableDeclaration() {
@@ -103,7 +118,7 @@ class Parser {
     return VariableDecl(token, initializer);
   }
 
-  Statement _function(String functionType) {
+  FuncDecl _function(String functionType) {
     final name = _consume(TokenType.identifier, 'Cần tên $functionType.');
     List<Token> params = [];
     List<Statement> body = [];
@@ -292,12 +307,14 @@ class Parser {
 
     if (_match([TokenType.equal])) {
       final equals = _previous();
-      final value = _assignment();
+      final value = _ternary();
 
       if (expression is Variable) {
         return Assign(expression.name, value);
       }
-
+      if (expression is Get) {
+        return Set(expression.object, expression.name, value);
+      }
       throw _error(equals, 'Không thể gán giá trị nếu không đó không là biến.');
     }
 
@@ -433,6 +450,10 @@ class Parser {
     while (true) {
       if (_match([TokenType.leftParen])) {
         expression = _finishCall(expression);
+      } else if (_match([TokenType.dot])) {
+        final name =
+            _consume(TokenType.identifier, 'Đối tượng không được gọi.');
+        expression = Get(expression, name);
       } else {
         break;
       }
@@ -461,6 +482,9 @@ class Parser {
     }
     if (_match([TokenType.identifier])) {
       return Variable(_previous());
+    }
+    if (_match([TokenType.kSelf])) {
+      return Self(_previous());
     }
 
     throw _error(_peek(), 'Token chưa có trong bảng quy tắc.');

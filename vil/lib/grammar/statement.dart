@@ -11,6 +11,7 @@ part 'statement.g.dart';
   'Expr            : Expression expression',
   'VariableDecl    : Token name, Expression? initializer',
   'FuncDecl        : Token name, List<Token> params, List<Statement> body',
+  'ClassDecl       : Token name, List<FuncDecl> methods',
   'Block           : List<Statement> statements',
   'IfStatement     : Expression condition, Statement thenStatement, Statement? elseStatement',
   'WhileLoop       : Expression condition, Statement body',

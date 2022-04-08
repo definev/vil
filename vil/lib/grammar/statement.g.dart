@@ -11,6 +11,7 @@ abstract class StatementVisitor<T> {
   T visitExpr(Expr expr);
   T visitVariableDecl(VariableDecl variableDecl);
   T visitFuncDecl(FuncDecl funcDecl);
+  T visitClassDecl(ClassDecl classDecl);
   T visitBlock(Block block);
   T visitIfStatement(IfStatement ifStatement);
   T visitWhileLoop(WhileLoop whileLoop);
@@ -66,6 +67,18 @@ class FuncDecl extends Statement {
   );
   T accept<T>(StatementVisitor<T> visitor) {
     return visitor.visitFuncDecl(this);
+  }
+}
+
+class ClassDecl extends Statement {
+  final Token name;
+  final List<FuncDecl> methods;
+  const ClassDecl(
+    this.name,
+    this.methods,
+  );
+  T accept<T>(StatementVisitor<T> visitor) {
+    return visitor.visitClassDecl(this);
   }
 }
 

@@ -17,6 +17,9 @@ abstract class ExpressionVisitor<T> {
   T visitAssign(Assign assign);
   T visitLogical(Logical logical);
   T visitCall(Call call);
+  T visitGet(Get get);
+  T visitSet(Set set);
+  T visitSelf(Self self);
 }
 
 abstract class Expression {
@@ -143,5 +146,41 @@ class Call extends Expression {
   );
   T accept<T>(ExpressionVisitor<T> visitor) {
     return visitor.visitCall(this);
+  }
+}
+
+class Get extends Expression {
+  final Expression object;
+  final Token name;
+  const Get(
+    this.object,
+    this.name,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitGet(this);
+  }
+}
+
+class Set extends Expression {
+  final Expression object;
+  final Token name;
+  final Expression value;
+  const Set(
+    this.object,
+    this.name,
+    this.value,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitSet(this);
+  }
+}
+
+class Self extends Expression {
+  final Token keyword;
+  const Self(
+    this.keyword,
+  );
+  T accept<T>(ExpressionVisitor<T> visitor) {
+    return visitor.visitSelf(this);
   }
 }

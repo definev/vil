@@ -92,8 +92,20 @@ class Vil {
 
 void main() {
   Vil.run('''
-tạo a = 3;
-tạo b = 4;
-in b;
+lớp Bim {
+  beep() {
+    in self;
+  }
+
+  bop(message) {
+    in message;
+  }
+}
+
+hàm outsource() {
+  in "OUT SOURCE!!!";
+}
+
+tạo bim = Bim();
 ''');
 }

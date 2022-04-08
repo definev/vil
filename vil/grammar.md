@@ -1,13 +1,19 @@
-# Cú pháp của VL
+# Cú pháp của ViL
 Mỗi ngôn ngữ đều có một số cú pháp riêng và có nhưng điểm chung kế thừa lại của nhau.
-VL có cú pháp theo phong cách ngôn ngữ C.
+ViL có cú pháp theo phong cách ngôn ngữ C.
 
 ```js
 program             => declaration* EOF ;
 
 declaration         => variableDecl
                     | funcDecl
+                    | classDecl
                     | statement ;
+
+
+classDecl           => "lớp" IDENTIFIER "{" *functions "}" ;
+functions           => IDENTIFIER "(" parameters? ")" block ;
+parameters          => IDENTIFIER ( "," IDENTIFIER )* ;
 
 funcDecl            => "hàm" IDENTIFIER "(" IDENTIFIER* ")" "{" statement* "}" ;
 variableDecl        => "tạo" IDENTIFIER ("=" expression)? ";" ;
@@ -32,7 +38,8 @@ printStatement      => "in" expression ";" ;
 block               => "{" declaration* "}" ;
 
 expression          => assignment ;
-assignment          => ternary ( "=" assignment)+ ;
+assignment          => ( call "." )? IDENTIFIER "=" assignment 
+                    | ternary ;
 ternary             => or ( "?" ternary ":" ternary )+ ;
 or                  => and ( "||" and)* ;
 and                 => postfix ( "&&" postfix )* ;
@@ -41,7 +48,7 @@ equality            => comparison ( ( "==" | "!=" ) comparison )* ;
 comparison          => term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term                => factor ( ( "+" | "-" ) factor )* ;
 factor              => unary ( ( "/" | "*" ) unary )* ;
-call                => primary ( "(" arguments? ")" )* ;
+call                => primary ( "(" arguments? ")" | "." INDENTIFIER )*  ;
 unary               => ( "!" | "-" ) unary
                     | primary ;
 primary             => số | chuỗi | "đúng" | "sai" | "(" expression ")"                   | IDENTIFIER ;

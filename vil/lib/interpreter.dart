@@ -7,7 +7,9 @@ import 'package:vil/token.dart';
 import 'package:vil/token_type.dart';
 import 'package:vil/vil.dart';
 import 'package:vil/vil_callable.dart';
+import 'package:vil/vil_class.dart';
 import 'package:vil/vil_function.dart';
+import 'package:vil/vil_instance.dart';
 
 class Interpreter
     implements ExpressionVisitor<dynamic>, StatementVisitor<void> {
@@ -280,6 +282,19 @@ class Interpreter
     return value;
   }
 
+  @override
+  dynamic visitGet(Get get) {
+    final object = _evaluate(get.object);
+    if (object is VilInstance) {
+      return object.get(get.name);
+    }
+
+    throw RuntimeError(
+      message: 'Không thể truy vấn đối tượng.',
+      token: get.name,
+    );
+  }
+
   // STATEMENT VISITOR
   @override
   void visitExpr(Expr exprStmt) {
@@ -307,6 +322,19 @@ class Interpreter
       funcDecl.name.lexeme,
       VilFunction(funcDecl, _environment),
     );
+  }
+
+  @override
+  void visitClassDecl(ClassDecl classDecl) {
+    _environment.define(classDecl.name.lexeme, null);
+
+    Map<String, VilFunction> methods = {};
+    for (final method in classDecl.methods) {
+      methods[method.name.lexeme] = VilFunction(method, _environment);
+    }
+
+    VilClass vilClass = VilClass(classDecl.name.lexeme, methods);
+    _environment.assign(classDecl.name, vilClass);
   }
 
   @override
@@ -353,6 +381,25 @@ class Interpreter
       value = _evaluate(returnStatement.value!);
     }
     throw ReturnEvent(value);
+  }
+
+  @override
+  dynamic visitSet(Set set) {
+    var object = _evaluate(set.object);
+
+    if (object is! VilInstance) {
+      throw RuntimeError(
+        message: 'Chỉ có thể thực thi trong hàm hoặc lớp.',
+        token: set.name,
+      );
+    }
+    var value = _evaluate(set.value);
+    object.set(set.name, value);
+  }
+
+  @override
+  dynamic visitSelf(Self self) {
+    return _lookUpVariable(self.keyword, self);
   }
 }
 

@@ -2,11 +2,18 @@ import 'package:vil/environment.dart';
 import 'package:vil/grammar/statement.dart';
 import 'package:vil/interpreter.dart';
 import 'package:vil/vil_callable.dart';
+import 'package:vil/vil_instance.dart';
 
 class VilFunction implements VilCallable {
   const VilFunction(this.declaration, this.closure);
   final FuncDecl declaration;
   final Environment closure;
+
+  VilFunction bind(VilInstance vilInstance) {
+    Environment environment = Environment({}, parent: closure.parent);
+    environment.define('self', vilInstance);
+    return VilFunction(declaration, environment);
+  }
 
   @override
   int get argsSize => declaration.params.length;
