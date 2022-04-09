@@ -18,9 +18,11 @@ packages:
   annotations:
     dependency: "direct main"
     description:
-      path: "../annotations"
-      relative: true
-    source: path
+      path: annotations
+      ref: HEAD
+      resolved-ref: "52142145c2452c2efead6c2f06bbd34f1c2889aa"
+      url: "https://github.com/definev/vil.git"
+    source: git
     version: "0.0.0"
   args:
     dependency: transitive

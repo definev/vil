@@ -5,10 +5,14 @@ environment:
 
 dependencies:
   annotations:
-    path: "../annotations"
+    git:
+      url: https://github.com/definev/vil.git
+      path: annotations
 
 dev_dependencies:
   test:
   build_runner:
   generators:
-    path: "../generators"
+    git:
+      url: https://github.com/definev/vil.git
+      path: generators

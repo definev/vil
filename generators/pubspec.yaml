@@ -7,7 +7,9 @@ dependencies:
   build:
   source_gen:
   annotations:
-    path: "../annotations"
+    git:
+      url: https://github.com/definev/vil.git
+      path: annotations
 
 dev_dependencies:
   build_test:
