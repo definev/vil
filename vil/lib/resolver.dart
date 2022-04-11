@@ -69,15 +69,31 @@ class Resolver with ExpressionVisitor<void>, StatementVisitor<void> {
         _VariableState.read,
         _VariableKind.native,
       ),
+      ...Map.fromEntries(
+        _interpreter.selfDefinedFunctions.map(
+          (function) => MapEntry(
+            function,
+            _VariableResolver(
+              Token(
+                lexeme: function,
+                type: TokenType.identifier,
+                loc: Loc(0, 0),
+                literal: null,
+              ),
+              _VariableState.read,
+              _VariableKind.native,
+            ),
+          ),
+        ),
+      ),
     },
+  
   ];
   FunctionType _currentFunction = FunctionType.none;
   ClassType _classType = ClassType.none;
 
   void resolve(List<Statement> statements) {
-    _beginScope();
     _resolveStatements(statements);
-    _endScope();
   }
 
   @override

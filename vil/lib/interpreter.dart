@@ -19,10 +19,13 @@ class Interpreter
       'clock': ClockFunction(),
       if (globals != null) ...globals,
     });
+    if (globals != null) selfDefinedFunctions.addAll(globals.keys);
+
     _environment = Environment({}, parent: this.globals);
   }
 
   late final Environment globals;
+  final List<String> selfDefinedFunctions = [];
   late Environment _environment;
   Environment get environment => _environment;
   Map<Expression, int> _locals = {};
