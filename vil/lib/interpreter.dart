@@ -13,14 +13,16 @@ import 'package:vil/vil_instance.dart';
 
 class Interpreter
     implements ExpressionVisitor<dynamic>, StatementVisitor<void> {
-  Interpreter() {
-    _environment = Environment({}, parent: globals);
+  Interpreter({Map<String, dynamic>? globals}) {
+    this.globals = Environment({
+      'exit': ExitFunction(),
+      'clock': ClockFunction(),
+      if (globals != null) ...globals,
+    });
+    _environment = Environment({}, parent: this.globals);
   }
 
-  final Environment globals = Environment({
-    'exit': ExitFunction(),
-    'clock': ClockFunction(),
-  });
+  late final Environment globals;
   late Environment _environment;
   Environment get environment => _environment;
   Map<Expression, int> _locals = {};

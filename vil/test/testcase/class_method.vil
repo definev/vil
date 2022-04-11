@@ -1,0 +1,8 @@
+lớp Xe {
+    còi() {
+        in "Pip pip!!!";
+    }
+}
+
+tạo oto = Xe();
+oto.còi();

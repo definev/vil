@@ -18,9 +18,11 @@ packages:
   annotations:
     dependency: "direct main"
     description:
-      path: "../annotations"
-      relative: true
-    source: path
+      path: annotations
+      ref: HEAD
+      resolved-ref: f4afaffb32c9e7227aaa85184b9c76e8532a878b
+      url: "https://github.com/definev/vil.git"
+    source: git
     version: "0.0.0"
   args:
     dependency: transitive
@@ -186,9 +188,11 @@ packages:
   generators:
     dependency: "direct dev"
     description:
-      path: "../generators"
-      relative: true
-    source: path
+      path: generators
+      ref: HEAD
+      resolved-ref: f4afaffb32c9e7227aaa85184b9c76e8532a878b
+      url: "https://github.com/definev/vil.git"
+    source: git
     version: "0.0.0"
   glob:
     dependency: transitive
